@@ -148,9 +148,8 @@ Users can browse by "I am a..." to see relevant use cases:
 
 ### Phase 3 (Growth)
 - Weekly automated newsletter from new submissions
-- Twitter bot that auto-imports showcase posts from @openclaw mentions
 - Integration with ClawdHub (install skills directly)
-- AI-powered search ("I want to automate my email and calendar")
+- AI-powered semantic search ("I want to automate my email and calendar")
 - Setup difficulty ratings (community-voted)
 - Video tutorial embeds with timestamps
 - "Build this" guided walkthroughs
@@ -184,7 +183,8 @@ The showcase page has 85+ entries with:
 
 ### 6.2 Source: Twitter/X
 
-- Search for @openclaw mentions with demo screenshots
+- Use SocialData.tools search API (~$0.0002/tweet) to find @openclaw mentions with demo screenshots
+- Or use Twitter Syndication API (free) for individual tweet URLs found manually
 - Extract: handle, text, media, date
 - Deduplicate against showcase entries
 
@@ -228,16 +228,18 @@ The showcase page has 85+ entries with:
 
 | Layer | Choice | Rationale |
 |-------|--------|-----------|
-| **Framework** | Next.js 15 (App Router) | SSR for SEO, React ecosystem, fast dev |
+| **Framework** | Next.js 15 (App Router) | SSR for SEO, React Server Components, Vercel-native |
 | **Language** | TypeScript | Type safety, DX |
 | **Styling** | Tailwind CSS + shadcn/ui | Rapid UI development, consistent design system |
-| **Database** | SQLite via Turso (libsql) | Simple, serverless, no infra overhead for MVP |
-| **ORM** | Drizzle ORM | Type-safe, lightweight, works great with Turso |
+| **CMS** | Sanity | Content modeling, Studio dashboard for admin review, GROQ queries for filtering, generous free tier (100K API req/mo) |
 | **Auth** | NextAuth.js (v5) | GitHub/Twitter OAuth when needed (post-MVP) |
 | **Email** | Resend | Simple transactional + newsletter emails |
-| **Search** | Built-in (SQL LIKE + client-side) | Upgrade to Algolia/Meilisearch later if needed |
-| **Hosting** | Vercel | Zero-config Next.js deployment, free tier sufficient |
-| **Media** | Cloudflare R2 or Vercel Blob | Screenshots/images storage |
+| **Search** | Sanity GROQ + client-side filtering | Sanity handles text search natively; upgrade to Algolia later if needed |
+| **URL Extraction** | Platform APIs (server-side) | Twitter Syndication API, Reddit OAuth, YouTube oEmbed, GitHub REST — all free |
+| **AI Enrichment** | Claude API (Sonnet + Haiku) | Structured output via `tool_use` for auto-categorization, ~$0.008/submission |
+| **Social Monitoring** | SocialData.tools + Reddit/GitHub APIs | Automated mention scanning at ~$0.04/mo for Twitter, free for Reddit/GitHub |
+| **Hosting** | Vercel | Zero-config Next.js deployment, free tier sufficient, cron jobs for scanning |
+| **Media** | Sanity Image Pipeline + Cloudflare R2 | Sanity handles image transforms; R2 for overflow/video storage |
 | **Analytics** | Plausible or Umami | Privacy-friendly, lightweight |
 
 ### 7.2 Project Structure
@@ -255,12 +257,17 @@ clawdex/
       submit/
         page.tsx                  # Submit form
       api/
-        use-cases/
-          route.ts                # CRUD API
+        extract/
+          route.ts                # URL extraction endpoint (Twitter, Reddit, YouTube, GitHub)
+        enrich/
+          route.ts                # AI enrichment endpoint (Claude tool_use)
         subscribe/
           route.ts                # Email collection
         upvote/
           route.ts                # Upvote endpoint
+        cron/
+          scan/
+            route.ts              # Automated social scanning (Vercel Cron)
     components/
       layout/
         header.tsx
@@ -271,6 +278,9 @@ clawdex/
         detail.tsx                # Full detail view
         filters.tsx               # Sidebar filters
         search.tsx                # Search component
+      submit/
+        url-input.tsx             # Smart URL paste input with platform detection
+        preview-card.tsx          # Shows extracted data before submission
       ui/                         # shadcn/ui components
         button.tsx
         badge.tsx
@@ -278,103 +288,134 @@ clawdex/
         select.tsx
         ...
     lib/
-      db/
-        schema.ts                 # Drizzle schema
-        index.ts                  # DB connection
-        seed.ts                   # Seed script
+      sanity/
+        client.ts                 # Sanity client configuration
+        queries.ts                # GROQ queries for use cases, categories, etc.
+        image.ts                  # Sanity image URL builder
+      extractors/
+        twitter.ts                # Twitter Syndication API extraction
+        reddit.ts                 # Reddit OAuth + .json extraction
+        youtube.ts                # YouTube oEmbed extraction
+        github.ts                 # GitHub REST API extraction
+        detect.ts                 # URL platform detection
+      ai/
+        enrich.ts                 # Claude Sonnet tool_use enrichment
+        filter.ts                 # Claude Haiku relevance filtering
+        schema.ts                 # tool_use JSON schema definitions
       data/
-        seed-data.json            # 85+ seeded use cases
-        categories.ts             # Category definitions
+        categories.ts             # Category definitions with examples
         integrations.ts           # Integration definitions
       utils.ts
     types/
       index.ts                    # Shared TypeScript types
-  drizzle/
-    migrations/                   # DB migrations
+  sanity/
+    schemas/
+      useCase.ts                  # Use case document schema
+      category.ts                 # Category document schema
+      integration.ts              # Integration document schema
+      submission.ts               # Pending submission schema
+      subscriber.ts               # Email subscriber schema
+    sanity.config.ts              # Sanity Studio configuration
+    sanity.cli.ts                 # Sanity CLI config
   public/
     icons/                        # Category + integration icons
     og/                           # OG images
   scripts/
-    scrape-showcase.ts            # Script to parse showcase data
-    import-tweets.ts              # Script to import from Twitter
+    seed-from-showcase.ts         # One-time: parse showcase page → Sanity
+    seed-from-tweets.ts           # One-time: import tweets via SocialData → Sanity
 ```
 
-### 7.3 Database Schema
+### 7.3 Sanity Content Schemas
 
-```
-use_cases
-  id              TEXT PRIMARY KEY
-  title           TEXT NOT NULL
-  slug            TEXT UNIQUE NOT NULL
-  description     TEXT NOT NULL
-  long_description TEXT
-  category_id     TEXT NOT NULL (FK)
-  complexity      TEXT NOT NULL (beginner/intermediate/advanced)
-  type            TEXT (workflow/skill/cron-job/multi-agent/hardware)
-  creator_handle  TEXT
-  creator_name    TEXT
-  creator_avatar  TEXT
-  source_url      TEXT
-  upvotes         INTEGER DEFAULT 0
-  status          TEXT DEFAULT 'published' (draft/published/pending)
-  featured        BOOLEAN DEFAULT false
-  created_at      DATETIME
-  updated_at      DATETIME
+```ts
+// useCase — Primary content type
+{
+  name: 'useCase',
+  type: 'document',
+  fields: [
+    { name: 'title',            type: 'string' },
+    { name: 'slug',             type: 'slug',       options: { source: 'title' } },
+    { name: 'description',      type: 'text' },         // Short (2-line) description for cards
+    { name: 'longDescription',  type: 'blockContent' },  // Rich text for detail page
+    { name: 'category',         type: 'reference',  to: [{ type: 'category' }] },
+    { name: 'complexity',       type: 'string',     options: { list: ['beginner', 'intermediate', 'advanced'] } },
+    { name: 'type',             type: 'string',     options: { list: ['workflow', 'skill', 'cron-job', 'multi-agent', 'hardware'] } },
+    { name: 'channels',         type: 'array',      of: [{ type: 'string' }] },  // whatsapp, telegram, etc.
+    { name: 'integrations',     type: 'array',      of: [{ type: 'reference', to: [{ type: 'integration' }] }] },
+    { name: 'personas',         type: 'array',      of: [{ type: 'string' }] },  // developer, founder, etc.
+    { name: 'creator',          type: 'object',     fields: [
+      { name: 'handle', type: 'string' },
+      { name: 'name',   type: 'string' },
+      { name: 'avatar', type: 'url' },
+    ]},
+    { name: 'sourceUrl',        type: 'url' },
+    { name: 'sourcePlatform',   type: 'string',     options: { list: ['twitter', 'reddit', 'youtube', 'github', 'other'] } },
+    { name: 'media',            type: 'array',      of: [{ type: 'image' }, { type: 'object', fields: [
+      { name: 'url', type: 'url' },
+      { name: 'type', type: 'string', options: { list: ['video', 'embed'] } },
+      { name: 'caption', type: 'string' },
+    ]}] },
+    { name: 'setupSteps',       type: 'array',      of: [{ type: 'block' }] },
+    { name: 'upvotes',          type: 'number',     initialValue: 0 },
+    { name: 'featured',         type: 'boolean',    initialValue: false },
+    { name: 'aiConfidence',     type: 'number' },   // 0-1 confidence from AI enrichment
+    { name: 'discoverySource',  type: 'string',     options: { list: ['manual', 'user-submission', 'auto-twitter', 'auto-reddit', 'auto-github'] } },
+  ]
+}
 
-use_case_channels (many-to-many)
-  use_case_id     TEXT (FK)
-  channel         TEXT (whatsapp/telegram/discord/slack/imessage)
+// category
+{
+  name: 'category',
+  type: 'document',
+  fields: [
+    { name: 'name',        type: 'string' },
+    { name: 'slug',        type: 'slug',   options: { source: 'name' } },
+    { name: 'description', type: 'text' },
+    { name: 'icon',        type: 'string' },
+    { name: 'color',       type: 'string' },
+    { name: 'order',       type: 'number' },
+  ]
+}
 
-use_case_integrations (many-to-many)
-  use_case_id     TEXT (FK)
-  integration_id  TEXT (FK)
+// integration
+{
+  name: 'integration',
+  type: 'document',
+  fields: [
+    { name: 'name',     type: 'string' },
+    { name: 'slug',     type: 'slug',   options: { source: 'name' } },
+    { name: 'icon',     type: 'image' },
+    { name: 'category', type: 'string', options: { list: ['messaging', 'productivity', 'devtools', 'smarthome', 'media', 'other'] } },
+  ]
+}
 
-use_case_personas (many-to-many)
-  use_case_id     TEXT (FK)
-  persona         TEXT (developer/founder/family/productivity/smarthome/creator)
+// submission — Pending user/auto submissions before approval
+{
+  name: 'submission',
+  type: 'document',
+  fields: [
+    { name: 'sourceUrl',        type: 'url' },
+    { name: 'sourcePlatform',   type: 'string' },
+    { name: 'rawExtractedData', type: 'object', fields: [/* raw platform API response */] },
+    { name: 'aiEnrichedData',   type: 'object', fields: [/* AI-generated title, description, tags */] },
+    { name: 'aiConfidence',     type: 'number' },
+    { name: 'status',           type: 'string', options: { list: ['pending', 'approved', 'rejected'] }, initialValue: 'pending' },
+    { name: 'submitterEmail',   type: 'string' },
+    { name: 'submittedAt',      type: 'datetime' },
+    { name: 'reviewedAt',       type: 'datetime' },
+  ]
+}
 
-use_case_media
-  id              TEXT PRIMARY KEY
-  use_case_id     TEXT (FK)
-  url             TEXT NOT NULL
-  type            TEXT (image/video/embed)
-  caption         TEXT
-  order           INTEGER
-
-categories
-  id              TEXT PRIMARY KEY
-  name            TEXT NOT NULL
-  slug            TEXT UNIQUE NOT NULL
-  description     TEXT
-  icon            TEXT
-  color           TEXT
-  order           INTEGER
-
-integrations
-  id              TEXT PRIMARY KEY
-  name            TEXT NOT NULL
-  slug            TEXT UNIQUE NOT NULL
-  icon            TEXT
-  category        TEXT (messaging/productivity/devtools/smarthome/media/other)
-
-subscribers
-  id              TEXT PRIMARY KEY
-  email           TEXT UNIQUE NOT NULL
-  subscribed_at   DATETIME
-  source          TEXT (hero/footer/popup)
-
-submissions
-  id              TEXT PRIMARY KEY
-  title           TEXT
-  description     TEXT
-  category_id     TEXT
-  complexity      TEXT
-  creator_handle  TEXT
-  creator_email   TEXT
-  source_url      TEXT
-  status          TEXT DEFAULT 'pending' (pending/approved/rejected)
-  submitted_at    DATETIME
-  reviewed_at     DATETIME
+// subscriber
+{
+  name: 'subscriber',
+  type: 'document',
+  fields: [
+    { name: 'email',        type: 'string' },
+    { name: 'source',       type: 'string', options: { list: ['hero', 'footer', 'popup'] } },
+    { name: 'subscribedAt', type: 'datetime' },
+  ]
+}
 ```
 
 ### 7.4 Key Pages & Routes
@@ -389,6 +430,75 @@ submissions
 | `/submit` | Submit form | Form → creates pending submission |
 | `/categories` | All categories | Category grid with descriptions |
 | `/categories/[slug]` | Category page | Filtered listing + category description |
+
+### 7.5 URL Extraction & AI Enrichment Pipeline
+
+When a user pastes a URL (or the cron scanner finds a mention), this pipeline runs:
+
+```
+URL pasted/discovered
+      │
+      ▼
+  Platform detection (regex on URL hostname)
+      │
+      ├─ twitter.com / x.com ──→ Syndication API (free, no auth)
+      │    Endpoint: cdn.syndication.twimg.com/tweet-result?id={id}&token={token}
+      │    Returns: tweet text, author, media URLs, likes, date
+      │
+      ├─ reddit.com ──→ OAuth .json endpoint (free, 100 req/min)
+      │    Endpoint: oauth.reddit.com/api/info?url={url}
+      │    Returns: title, selftext (markdown), author, score, media, comments
+      │
+      ├─ youtube.com / youtu.be ──→ oEmbed API (free, no auth)
+      │    Endpoint: youtube.com/oembed?url={url}&format=json
+      │    Returns: title, author, thumbnail
+      │    (Optionally: YouTube Data API v3 for description/stats, free 10K/day)
+      │
+      └─ github.com ──→ REST API (free, 5K req/hr with PAT)
+           Endpoint: api.github.com/repos/{owner}/{repo}
+           Returns: name, description, stars, language, topics
+      │
+      ▼
+  Raw extracted data
+      │
+      ▼
+  Claude Sonnet — single tool_use call (~$0.008)
+  Returns structured JSON:
+    {
+      title, description, category, complexity,
+      integrations[], personas[], slug,
+      metaDescription, confidenceScore (0-1),
+      isRelevant (boolean)
+    }
+      │
+      ▼
+  Confidence-based routing:
+    ≥ 0.85 → Auto-approve to Sanity as published use case
+    0.60–0.84 → Light review (pre-filled in Sanity Studio)
+    < 0.60 → Full manual review in Sanity Studio
+```
+
+#### Automated Social Scanning (Vercel Cron)
+
+Runs every 6 hours via `/api/cron/scan`:
+
+| Source | Method | Cost |
+|---|---|---|
+| **Twitter** | SocialData.tools Search Monitor for "@openclaw" | ~$0.04/mo |
+| **Reddit** | OAuth search for "openclaw" across subreddits | Free |
+| **GitHub** | Search API for repos mentioning "openclaw" | Free |
+
+Each candidate → deduplicate by URL → Haiku relevance filter (~$0.001/call) → Sonnet enrichment → Sanity submission queue.
+
+#### Cost Summary
+
+| Component | Monthly Cost |
+|---|---|
+| URL extraction (all platform APIs) | $0 |
+| Twitter monitoring (SocialData.tools) | ~$0.04 |
+| AI filtering — Haiku (scanning candidates) | ~$3 |
+| AI enrichment — Sonnet (submissions) | ~$4 |
+| **Total pipeline cost** | **~$7/mo** |
 
 ---
 
@@ -430,32 +540,36 @@ submissions
 ## 10. Implementation Phases
 
 ### Phase 1: Foundation
-- [ ] Initialize Next.js project with TypeScript, Tailwind, shadcn/ui
-- [ ] Set up Drizzle ORM + Turso database
-- [ ] Define database schema and run migrations
-- [ ] Create seed data JSON from showcase research (50-85 entries)
-- [ ] Write seed script to populate database
+- [ ] Initialize Next.js 15 project with TypeScript, Tailwind, shadcn/ui
+- [ ] Set up Sanity project with Studio, define content schemas (useCase, category, integration, submission, subscriber)
+- [ ] Configure Sanity client + GROQ queries in `lib/sanity/`
+- [ ] Seed categories and integrations into Sanity
+- [ ] Create seed data from showcase research (50-85 entries) and import into Sanity
 
 ### Phase 2: Core Pages
 - [ ] Build homepage (hero, featured, categories, email signup)
-- [ ] Build browse page with filtering and search
-- [ ] Build use case detail page
+- [ ] Build browse page with GROQ-powered filtering and search
+- [ ] Build use case detail page with related use cases
 - [ ] Build category pages
 - [ ] Implement responsive design (mobile-first)
 
-### Phase 3: Interactivity
+### Phase 3: Smart Submission Pipeline
+- [ ] Build URL extraction endpoints (`/api/extract/`) for Twitter, Reddit, YouTube, GitHub
+- [ ] Build AI enrichment endpoint (`/api/enrich/`) with Claude Sonnet tool_use
+- [ ] Build submit page with smart URL input → auto-extract → preview → submit flow
+- [ ] Confidence-based routing to Sanity (auto-approve / light review / full review)
 - [ ] Add upvoting (localStorage for MVP, no auth needed)
-- [ ] Build submit form with validation
 - [ ] Email collection endpoint (Resend integration)
-- [ ] Search with debounced input
 
-### Phase 4: Polish & Launch
+### Phase 4: Automation & Launch
+- [ ] Set up Vercel Cron for automated social scanning (`/api/cron/scan/`)
+- [ ] SocialData.tools integration for Twitter mention monitoring
+- [ ] Reddit + GitHub automated scanning
 - [ ] OG image generation
-- [ ] SEO meta tags and structured data
-- [ ] Analytics integration
+- [ ] SEO meta tags and structured data (JSON-LD)
+- [ ] Analytics integration (Plausible or Umami)
 - [ ] Performance optimization (ISR, image optimization)
 - [ ] Deploy to Vercel
-- [ ] Seed production database
 
 ---
 
@@ -474,7 +588,9 @@ submissions
 ## 12. Open Questions
 
 1. **Domain:** Going with `clawdex.dev` - confirmed available at ~$12/yr on Cloudflare
-2. **Admin panel:** Build a simple admin for reviewing submissions, or use a headless CMS?
+2. ~~**Admin panel:** Build a simple admin for reviewing submissions, or use a headless CMS?~~ → **Resolved: Using Sanity Studio as the admin dashboard**
 3. **Should we support "Setup Guides"** as a separate content type alongside use cases?
 4. **Newsletter frequency:** Weekly? Bi-weekly?
 5. **Relationship with OpenClaw team:** Should we reach out to Peter Steinberger for endorsement/collaboration?
+6. **Auto-approve threshold:** Start with 0.85 confidence for auto-approve, or be more conservative (0.90+) at launch?
+7. **Upvotes storage:** Keep upvotes in Sanity (simpler) or add a lightweight DB like Turso for high-frequency writes?
