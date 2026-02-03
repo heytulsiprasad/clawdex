@@ -11,6 +11,7 @@ export default defineConfig({
   title: "ClawDex Studio",
   projectId,
   dataset,
+  basePath: "/studio",
   plugins: [structureTool(), visionTool()],
   schema: {
     types: schemaTypes,
