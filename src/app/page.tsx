@@ -1,65 +1,211 @@
-import Image from "next/image";
+import Link from "next/link";
+import {
+  ChevronRight,
+  Code2,
+  Rocket,
+  Heart,
+  Sparkles,
+  Home,
+  PenTool,
+  ArrowRight,
+  Mail,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
+import { Hero } from "@/components/layout/hero";
+import { UseCaseCardComponent } from "@/components/use-case/card";
+import { CategoryCard } from "@/components/layout/category-card";
+import { MOCK_USE_CASES, MOCK_CATEGORIES } from "@/lib/data/mock";
+import { PERSONAS, type Persona } from "@/lib/data/personas";
+import type { LucideIcon } from "lucide-react";
 
-export default function Home() {
+const PERSONA_ICONS: Record<string, LucideIcon> = {
+  "code-2": Code2,
+  rocket: Rocket,
+  heart: Heart,
+  sparkles: Sparkles,
+  home: Home,
+  "pen-tool": PenTool,
+};
+
+function PersonaCard({ persona }: { persona: Persona }) {
+  const Icon = PERSONA_ICONS[persona.icon] || Sparkles;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <Link
+      href={`/browse?persona=${persona.id}`}
+      className="group flex items-center gap-3 rounded-xl border border-white/[0.05] bg-card/40 px-4 py-3 transition-all duration-300 hover:bg-card/70 hover:border-white/[0.08]"
+    >
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/[0.06] border border-amber-500/10 transition-colors group-hover:bg-amber-500/[0.10]">
+        <Icon className="size-3.5 text-amber-400" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-[13px] font-semibold text-foreground tracking-[-0.01em]">
+          {persona.label}
+        </p>
+        <p className="text-[11px] text-muted-foreground/50 line-clamp-1">
+          {persona.description}
+        </p>
+      </div>
+      <ChevronRight className="ml-auto size-3.5 text-muted-foreground/30 transition-all group-hover:text-amber-400/60 group-hover:translate-x-0.5" />
+    </Link>
+  );
+}
+
+function SectionHeader({
+  label,
+  title,
+  action,
+}: {
+  label: string;
+  title: string;
+  action?: { href: string; text: string };
+}) {
+  return (
+    <div className="flex items-end justify-between mb-8">
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-amber-400/60 mb-1.5">
+          {label}
+        </p>
+        <h2 className="text-xl font-bold tracking-[-0.02em] text-foreground sm:text-2xl">
+          {title}
+        </h2>
+      </div>
+      {action && (
+        <Link
+          href={action.href}
+          className="group hidden items-center gap-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground sm:flex"
+        >
+          {action.text}
+          <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
+        </Link>
+      )}
+    </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <div className="relative min-h-screen">
+      <Header />
+
+      <main>
+        {/* ── Hero ────────────────────────────────────────────── */}
+        <Hero />
+
+        {/* ── Featured Use Cases ──────────────────────────────── */}
+        <section className="relative py-16 sm:py-20">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <SectionHeader
+              label="Featured"
+              title="Community Highlights"
+              action={{ href: "/browse", text: "View all" }}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {MOCK_USE_CASES.map((useCase) => (
+                <UseCaseCardComponent key={useCase._id} useCase={useCase} />
+              ))}
+            </div>
+
+            {/* Mobile CTA */}
+            <div className="mt-8 flex justify-center sm:hidden">
+              <Button
+                asChild
+                variant="outline"
+                className="border-white/[0.06] text-[13px] text-muted-foreground hover:text-foreground"
+              >
+                <Link href="/browse">
+                  Browse all use cases
+                  <ArrowRight className="ml-1.5 size-3" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Divider ────────────────────────────────────────── */}
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="h-[1px] bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
         </div>
+
+        {/* ── Categories ──────────────────────────────────────── */}
+        <section className="py-16 sm:py-20">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <SectionHeader
+              label="Explore"
+              title="Browse by Category"
+              action={{ href: "/categories", text: "All categories" }}
+            />
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+              {MOCK_CATEGORIES.map((category) => (
+                <CategoryCard key={category._id} category={category} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Divider ────────────────────────────────────────── */}
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="h-[1px] bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+        </div>
+
+        {/* ── Persona Selector ────────────────────────────────── */}
+        <section className="py-16 sm:py-20">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <SectionHeader
+              label="Personalized"
+              title="I am a..."
+            />
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {PERSONAS.map((persona) => (
+                <PersonaCard key={persona.id} persona={persona} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Email CTA ──────────────────────────────────────── */}
+        <section className="relative py-16 sm:py-24">
+          {/* Glow */}
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="h-[300px] w-[500px] rounded-full bg-amber-500/[0.025] blur-[100px]" />
+          </div>
+
+          <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="mx-auto max-w-lg text-center">
+              <div className="mb-5 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/[0.06] border border-amber-500/10">
+                <Mail className="size-4 text-amber-400" />
+              </div>
+
+              <h2 className="text-xl font-bold tracking-[-0.02em] text-foreground sm:text-2xl">
+                Stay in the loop
+              </h2>
+              <p className="mt-2 text-[14px] text-muted-foreground/70">
+                Get the best new OpenClaw use cases delivered weekly.
+                <br className="hidden sm:block" />
+                No spam, unsubscribe anytime.
+              </p>
+
+              <form className="mt-6 flex gap-2 justify-center">
+                <input
+                  type="email"
+                  placeholder="you@email.com"
+                  className="h-10 w-full max-w-[260px] rounded-lg border border-white/[0.06] bg-white/[0.03] px-3.5 text-[13px] text-foreground placeholder:text-muted-foreground/40 outline-none transition-all focus:border-amber-500/20 focus:bg-white/[0.05]"
+                />
+                <Button className="h-10 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold text-[13px] hover:from-amber-400 hover:to-orange-400 shadow-[0_0_20px_rgba(245,158,11,0.12)]">
+                  Subscribe
+                </Button>
+              </form>
+            </div>
+          </div>
+        </section>
       </main>
+
+      <Footer />
     </div>
   );
 }
