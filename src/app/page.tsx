@@ -35,10 +35,10 @@ function PersonaCard({ persona }: { persona: Persona }) {
   return (
     <Link
       href={`/browse?persona=${persona.id}`}
-      className="group flex items-center gap-3 rounded-xl border border-white/[0.05] bg-card/40 px-4 py-3 transition-all duration-300 hover:bg-card/70 hover:border-white/[0.08]"
+      className="group flex items-center gap-3 rounded-xl border border-stone-200/80 bg-white px-4 py-3 shadow-[0_1px_2px_rgba(0,0,0,0.03)] transition-all duration-300 hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:border-stone-300/80"
     >
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/[0.06] border border-amber-500/10 transition-colors group-hover:bg-amber-500/[0.10]">
-        <Icon className="size-3.5 text-amber-400" />
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 border border-amber-200/60 transition-colors group-hover:bg-amber-100/80">
+        <Icon className="size-3.5 text-amber-600" />
       </div>
       <div className="min-w-0">
         <p className="text-[13px] font-semibold text-foreground tracking-[-0.01em]">
@@ -48,7 +48,7 @@ function PersonaCard({ persona }: { persona: Persona }) {
           {persona.description}
         </p>
       </div>
-      <ChevronRight className="ml-auto size-3.5 text-muted-foreground/30 transition-all group-hover:text-amber-400/60 group-hover:translate-x-0.5" />
+      <ChevronRight className="ml-auto size-3.5 text-muted-foreground/30 transition-all group-hover:text-amber-600/60 group-hover:translate-x-0.5" />
     </Link>
   );
 }
@@ -65,7 +65,7 @@ function SectionHeader({
   return (
     <div className="flex items-end justify-between mb-8">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-amber-400/60 mb-1.5">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-amber-600/70 mb-1.5">
           {label}
         </p>
         <h2 className="text-xl font-bold tracking-[-0.02em] text-foreground sm:text-2xl">
@@ -114,7 +114,7 @@ export default function HomePage() {
               <Button
                 asChild
                 variant="outline"
-                className="border-white/[0.06] text-[13px] text-muted-foreground hover:text-foreground"
+                className="border-stone-200 text-[13px] text-muted-foreground hover:text-foreground hover:bg-stone-50"
               >
                 <Link href="/browse">
                   Browse all use cases
@@ -127,7 +127,7 @@ export default function HomePage() {
 
         {/* ── Divider ────────────────────────────────────────── */}
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="h-[1px] bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+          <div className="h-[1px] bg-gradient-to-r from-transparent via-stone-300/40 to-transparent" />
         </div>
 
         {/* ── Categories ──────────────────────────────────────── */}
@@ -149,7 +149,7 @@ export default function HomePage() {
 
         {/* ── Divider ────────────────────────────────────────── */}
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="h-[1px] bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+          <div className="h-[1px] bg-gradient-to-r from-transparent via-stone-300/40 to-transparent" />
         </div>
 
         {/* ── Persona Selector ────────────────────────────────── */}
@@ -172,13 +172,13 @@ export default function HomePage() {
         <section className="relative py-16 sm:py-24">
           {/* Glow */}
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <div className="h-[300px] w-[500px] rounded-full bg-amber-500/[0.025] blur-[100px]" />
+            <div className="h-[300px] w-[500px] rounded-full bg-amber-400/[0.06] blur-[100px]" />
           </div>
 
           <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
             <div className="mx-auto max-w-lg text-center">
-              <div className="mb-5 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/[0.06] border border-amber-500/10">
-                <Mail className="size-4 text-amber-400" />
+              <div className="mb-5 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 border border-amber-200/60">
+                <Mail className="size-4 text-amber-600" />
               </div>
 
               <h2 className="text-xl font-bold tracking-[-0.02em] text-foreground sm:text-2xl">
@@ -194,9 +194,9 @@ export default function HomePage() {
                 <input
                   type="email"
                   placeholder="you@email.com"
-                  className="h-10 w-full max-w-[260px] rounded-lg border border-white/[0.06] bg-white/[0.03] px-3.5 text-[13px] text-foreground placeholder:text-muted-foreground/40 outline-none transition-all focus:border-amber-500/20 focus:bg-white/[0.05]"
+                  className="h-10 w-full max-w-[260px] rounded-lg border border-stone-200 bg-white px-3.5 text-[13px] text-foreground placeholder:text-stone-400 outline-none transition-all focus:border-amber-400/50 focus:ring-2 focus:ring-amber-400/10"
                 />
-                <Button className="h-10 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold text-[13px] hover:from-amber-400 hover:to-orange-400 shadow-[0_0_20px_rgba(245,158,11,0.12)]">
+                <Button className="h-10 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold text-[13px] hover:from-amber-600 hover:to-orange-600 shadow-sm hover:shadow-md transition-all">
                   Subscribe
                 </Button>
               </form>

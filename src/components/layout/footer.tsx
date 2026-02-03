@@ -32,9 +32,9 @@ export function Footer() {
   };
 
   return (
-    <footer className="relative border-t border-white/[0.04]">
+    <footer className="relative border-t border-stone-200">
       {/* Top gradient line */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-400/20 to-transparent" />
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-12 lg:py-16">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-8">
@@ -42,10 +42,10 @@ export function Footer() {
           <div className="lg:col-span-5">
             <Link href="/" className="inline-flex items-center gap-2.5">
               <div className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-amber-500 to-orange-600">
-                <span className="text-[10px] font-bold text-black">C</span>
+                <span className="text-[10px] font-bold text-white">C</span>
               </div>
               <span className="text-sm font-semibold tracking-[-0.02em]">
-                Claw<span className="text-amber-400">Dex</span>
+                Claw<span className="text-amber-600">Dex</span>
               </span>
             </Link>
 
@@ -57,7 +57,7 @@ export function Footer() {
             {/* Newsletter */}
             <form onSubmit={handleSubmit} className="mt-5">
               {submitted ? (
-                <p className="text-[13px] font-medium text-amber-400">
+                <p className="text-[13px] font-medium text-amber-600">
                   You&apos;re in. We&apos;ll send the best new use cases weekly.
                 </p>
               ) : (
@@ -71,12 +71,12 @@ export function Footer() {
                       placeholder="you@email.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-8 max-w-[220px] bg-white/[0.04] border-white/[0.06] text-[13px] placeholder:text-muted-foreground/60 focus-visible:border-amber-500/40 focus-visible:ring-amber-500/10"
+                      className="h-8 max-w-[220px] bg-white border-stone-200 text-[13px] placeholder:text-stone-400 focus-visible:border-amber-400 focus-visible:ring-amber-400/10"
                     />
                     <Button
                       type="submit"
                       size="sm"
-                      className="h-8 bg-white/[0.06] text-foreground/80 hover:bg-white/[0.10] hover:text-foreground border border-white/[0.06] text-[13px]"
+                      className="h-8 bg-stone-100 text-foreground/80 hover:bg-stone-200 hover:text-foreground border border-stone-200 text-[13px]"
                     >
                       <ArrowRight className="size-3.5" />
                     </Button>
@@ -109,8 +109,8 @@ export function Footer() {
 
           {/* Social Proof */}
           <div className="lg:col-span-3 lg:text-right">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-3 py-1.5">
-              <Users className="size-3 text-amber-500/70" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5">
+              <Users className="size-3 text-amber-600" />
               <span className="text-[12px] text-muted-foreground">
                 <span className="font-semibold text-foreground/80">8,900+</span>{" "}
                 community members
@@ -120,11 +120,11 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="mt-10 flex items-center justify-between border-t border-white/[0.04] pt-6">
-          <p className="text-[11px] text-muted-foreground/50">
+        <div className="mt-10 flex items-center justify-between border-t border-stone-200/60 pt-6">
+          <p className="text-[11px] text-muted-foreground/60">
             &copy; {new Date().getFullYear()} ClawDex
           </p>
-          <p className="text-[11px] text-muted-foreground/40">
+          <p className="text-[11px] text-muted-foreground/50">
             Built for the OpenClaw community
           </p>
         </div>
