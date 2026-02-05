@@ -66,10 +66,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useAuth() {
+export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    return {
+      user: null,
+      loading: true,
+      isConfigured: false,
+      signInWithGoogle: async () => {},
+      signOut: async () => {},
+    };
   }
   return context;
 }
