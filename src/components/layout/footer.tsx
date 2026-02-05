@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Users } from "lucide-react";
+import { Zap } from "lucide-react";
 import { SubscribeForm } from "@/components/newsletter/subscribe-form";
 
 const FOOTER_LINKS = {
@@ -72,10 +72,10 @@ export function Footer() {
           {/* Social Proof */}
           <div className="lg:col-span-3 lg:text-right">
             <div className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5">
-              <Users className="size-3 text-amber-600" />
+              <Zap className="size-3 text-amber-600" />
               <span className="text-[12px] text-muted-foreground">
-                <span className="font-semibold text-foreground/80">8,900+</span>{" "}
-                community members
+                <span className="font-semibold text-foreground/80">90+</span>{" "}
+                use cases cataloged
               </span>
             </div>
           </div>
