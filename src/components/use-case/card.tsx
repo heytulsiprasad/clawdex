@@ -9,11 +9,20 @@ import { BookmarkButton } from "@/components/use-case/bookmark-button";
 import type { UseCaseCard } from "@/types";
 import { cn } from "@/lib/utils";
 
+function DevToIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="M7 8.5v7M10 8.5l2 3.5-2 3.5M14 8.5h3M14 12h2M14 15.5h3" />
+    </svg>
+  );
+}
+
 const PLATFORM_ICONS: Record<string, React.ElementType> = {
   twitter: Twitter,
   reddit: MessageSquare,
   youtube: Youtube,
   github: Github,
+  devto: DevToIcon,
   other: Globe,
 };
 
