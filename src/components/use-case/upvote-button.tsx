@@ -145,7 +145,7 @@ export function UpvoteButton({ id, initialCount, variant }: UpvoteButtonProps) {
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2",
             "active:scale-[0.95] active:duration-75",
             voted
-              ? "bg-amber-50 border-amber-300 shadow-[0_2px_8px_rgba(245,158,11,0.12)] cursor-default"
+              ? "bg-amber-50 border-amber-300 shadow-[0_2px_8px_rgba(245,158,11,0.12)]"
               : "bg-white border-stone-200 shadow-sm hover:border-amber-200 hover:shadow-md hover:bg-amber-50/50 cursor-pointer"
           )}
         >

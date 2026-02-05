@@ -27,7 +27,7 @@ export function FAQ({ faqs }: { faqs: FAQItem[] }) {
           </h2>
         </div>
 
-        <div className="mx-auto max-w-3xl">
+        <div>
           <Accordion type="single" collapsible className="w-full">
             {faqs.map((item, index) => (
               <AccordionItem
