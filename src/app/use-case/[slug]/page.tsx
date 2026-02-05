@@ -465,21 +465,17 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
               <div className="bg-white border border-stone-200 rounded-lg shadow-sm p-6">
                 <h3 className="font-semibold text-stone-900 mb-4">Creator</h3>
                 <div className="flex items-center gap-3">
-                  {useCase.creator.avatar ? (
-                    <Image
-                      src={useCase.creator.avatar}
-                      alt={useCase.creator.name}
-                      width={48}
-                      height={48}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-amber-100 border border-amber-200 flex items-center justify-center">
-                      <span className="text-amber-700 font-semibold text-lg">
-                        {useCase.creator.name.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                  )}
+                  <Image
+                    src={
+                      useCase.creator.avatar ||
+                      `https://unavatar.io/twitter/${useCase.creator.handle}`
+                    }
+                    alt={useCase.creator.name}
+                    width={48}
+                    height={48}
+                    className="rounded-full bg-stone-100"
+                    unoptimized={!useCase.creator.avatar}
+                  />
                   <div>
                     <div className="font-medium text-stone-900">
                       {useCase.creator.name}
@@ -488,9 +484,10 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                       href={`https://twitter.com/${useCase.creator.handle}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-stone-600 hover:text-amber-600 transition-colors"
+                      className="inline-flex items-center gap-1 text-sm text-stone-600 hover:text-amber-600 transition-colors"
                     >
                       @{useCase.creator.handle}
+                      <PlatformIcon className="size-3.5 text-stone-400" />
                     </a>
                   </div>
                 </div>

@@ -19,6 +19,7 @@ export const MOCK_USE_CASES: UseCaseCard[] = [
       { name: "Browser Automation", slug: "browser-automation" },
     ],
     creator: { handle: "armanddp", name: "Armand du Plessis" },
+    sourcePlatform: "twitter",
     upvotes: 234,
   },
   {
@@ -39,6 +40,7 @@ export const MOCK_USE_CASES: UseCaseCard[] = [
       { name: "Notion", slug: "notion" },
     ],
     creator: { handle: "yohasebe", name: "Yoichiro Hasebe" },
+    sourcePlatform: "twitter",
     upvotes: 189,
   },
   {
@@ -59,6 +61,7 @@ export const MOCK_USE_CASES: UseCaseCard[] = [
       { name: "HomePod", slug: "homepod" },
     ],
     creator: { handle: "cjdutoit", name: "CJ du Toit" },
+    sourcePlatform: "reddit",
     upvotes: 167,
   },
   {
@@ -79,6 +82,7 @@ export const MOCK_USE_CASES: UseCaseCard[] = [
       { name: "Vercel", slug: "vercel" },
     ],
     creator: { handle: "scottw", name: "Scott W" },
+    sourcePlatform: "github",
     upvotes: 156,
   },
   {
@@ -99,6 +103,7 @@ export const MOCK_USE_CASES: UseCaseCard[] = [
       { name: "Todoist", slug: "todoist" },
     ],
     creator: { handle: "sarahdev", name: "Sarah Developer" },
+    sourcePlatform: "twitter",
     upvotes: 142,
   },
   {
@@ -119,6 +124,7 @@ export const MOCK_USE_CASES: UseCaseCard[] = [
       { name: "Obsidian", slug: "obsidian" },
     ],
     creator: { handle: "alexresearch", name: "Alex R" },
+    sourcePlatform: "youtube",
     upvotes: 128,
   },
 ];

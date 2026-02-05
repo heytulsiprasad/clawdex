@@ -168,6 +168,7 @@ export interface UseCaseCard {
     color: string;
   };
   complexity: Complexity;
+  sourcePlatform: SourcePlatform;
   integrations: {
     name: string;
     slug: string;

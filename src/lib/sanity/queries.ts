@@ -15,6 +15,7 @@ export const USE_CASES_QUERY = defineQuery(`
       color
     },
     complexity,
+    sourcePlatform,
     integrations[]->{
       name,
       "slug": slug.current
@@ -37,6 +38,7 @@ export const FEATURED_USE_CASES_QUERY = defineQuery(`
       color
     },
     complexity,
+    sourcePlatform,
     integrations[]->{
       name,
       "slug": slug.current
@@ -97,6 +99,7 @@ export const RELATED_USE_CASES_QUERY = defineQuery(`
       color
     },
     complexity,
+    sourcePlatform,
     creator,
     upvotes
   }
@@ -126,6 +129,7 @@ export const FILTERED_USE_CASES_QUERY = defineQuery(`
       color
     },
     complexity,
+    sourcePlatform,
     integrations[]->{
       name,
       "slug": slug.current

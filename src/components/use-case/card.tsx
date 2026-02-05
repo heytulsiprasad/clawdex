@@ -1,8 +1,18 @@
 import Link from "next/link";
+import Image from "next/image";
+import { Twitter, Github, Youtube, MessageSquare, Globe } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { UpvoteButton } from "@/components/use-case/upvote-button";
 import type { UseCaseCard } from "@/types";
 import { cn } from "@/lib/utils";
+
+const PLATFORM_ICONS: Record<string, React.ElementType> = {
+  twitter: Twitter,
+  reddit: MessageSquare,
+  youtube: Youtube,
+  github: Github,
+  other: Globe,
+};
 
 const COMPLEXITY_CONFIG = {
   beginner: { label: "Beginner", className: "text-emerald-700 border-emerald-200 bg-emerald-50" },
@@ -26,6 +36,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 export function UseCaseCardComponent({ useCase }: { useCase: UseCaseCard }) {
   const complexity = COMPLEXITY_CONFIG[useCase.complexity];
   const categoryColor = CATEGORY_COLORS[useCase.category.color] || CATEGORY_COLORS.amber;
+  const PlatformIcon = PLATFORM_ICONS[useCase.sourcePlatform] || PLATFORM_ICONS.other;
 
   return (
     <Link
@@ -81,9 +92,20 @@ export function UseCaseCardComponent({ useCase }: { useCase: UseCaseCard }) {
 
         {/* Bottom row: Creator + Upvotes */}
         <div className="flex items-center justify-between pt-3 border-t border-stone-100">
-          <span className="text-[12px] text-muted-foreground/70 font-mono">
-            @{useCase.creator.handle}
-          </span>
+          <div className="flex items-center gap-1.5">
+            <Image
+              src={`https://unavatar.io/twitter/${useCase.creator.handle}`}
+              alt={useCase.creator.handle}
+              width={18}
+              height={18}
+              className="rounded-full bg-stone-100"
+              unoptimized
+            />
+            <span className="text-[12px] text-muted-foreground/70 font-mono">
+              @{useCase.creator.handle}
+            </span>
+            <PlatformIcon className="size-3 text-muted-foreground/50" />
+          </div>
           <UpvoteButton id={useCase._id} initialCount={useCase.upvotes} variant="card" />
         </div>
       </div>
