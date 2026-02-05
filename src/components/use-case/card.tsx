@@ -66,7 +66,7 @@ export function UseCaseCardComponent({ useCase }: { useCase: UseCaseCard }) {
         </p>
 
         {/* Integrations */}
-        {useCase.integrations.length > 0 && (
+        {useCase.integrations?.length > 0 && (
           <div className="mb-4 flex flex-wrap gap-1.5">
             {useCase.integrations.map((integration) => (
               <span

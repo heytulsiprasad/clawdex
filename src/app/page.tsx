@@ -16,8 +16,14 @@ import { Footer } from "@/components/layout/footer";
 import { Hero } from "@/components/layout/hero";
 import { UseCaseCardComponent } from "@/components/use-case/card";
 import { CategoryCard } from "@/components/layout/category-card";
-import { MOCK_USE_CASES, MOCK_CATEGORIES } from "@/lib/data/mock";
+import { client } from "@/lib/sanity/client";
+import {
+  USE_CASES_QUERY,
+  CATEGORIES_QUERY,
+  STATS_QUERY,
+} from "@/lib/sanity/queries";
 import { PERSONAS, type Persona } from "@/lib/data/personas";
+import type { UseCaseCard, CategoryView, StatsView } from "@/types";
 import type { LucideIcon } from "lucide-react";
 
 const PERSONA_ICONS: Record<string, LucideIcon> = {
@@ -85,14 +91,25 @@ function SectionHeader({
   );
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [useCases, categories, stats] = await Promise.all([
+    client.fetch<UseCaseCard[]>(USE_CASES_QUERY),
+    client.fetch<CategoryView[]>(CATEGORIES_QUERY),
+    client.fetch<StatsView>(STATS_QUERY),
+  ]);
+
+  // Show top 6 use cases by upvotes for the featured section
+  const featured = [...useCases]
+    .sort((a, b) => b.upvotes - a.upvotes)
+    .slice(0, 6);
+
   return (
     <div className="relative min-h-screen">
       <Header />
 
       <main>
         {/* ── Hero ────────────────────────────────────────────── */}
-        <Hero />
+        <Hero stats={stats} />
 
         {/* ── Featured Use Cases ──────────────────────────────── */}
         <section className="relative py-16 sm:py-20">
@@ -104,7 +121,7 @@ export default function HomePage() {
             />
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {MOCK_USE_CASES.map((useCase) => (
+              {featured.map((useCase) => (
                 <UseCaseCardComponent key={useCase._id} useCase={useCase} />
               ))}
             </div>
@@ -140,7 +157,7 @@ export default function HomePage() {
             />
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-              {MOCK_CATEGORIES.map((category) => (
+              {categories.map((category) => (
                 <CategoryCard key={category._id} category={category} />
               ))}
             </div>

@@ -232,7 +232,17 @@ export const useCase = defineType({
     select: {
       title: "title",
       subtitle: "category.name",
-      media: "media.0",
+      firstMedia: "media.0",
+    },
+    prepare({ title, subtitle, firstMedia }) {
+      return {
+        title,
+        subtitle,
+        media:
+          firstMedia && firstMedia._type === "image"
+            ? firstMedia
+            : RocketIcon,
+      };
     },
   },
 });

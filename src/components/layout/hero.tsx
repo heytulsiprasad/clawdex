@@ -3,17 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
-import { MOCK_STATS } from "@/lib/data/mock";
+import type { StatsView } from "@/types";
 
-const STATS = [
-  { label: "Use Cases", value: `${MOCK_STATS.totalUseCases}+` },
-  { label: "Categories", value: `${MOCK_STATS.totalCategories}` },
-  { label: "Integrations", value: `${MOCK_STATS.totalIntegrations}+` },
-];
-
-export function Hero() {
+export function Hero({ stats }: { stats: StatsView }) {
   const [search, setSearch] = useState("");
   const router = useRouter();
+
+  const STATS = [
+    { label: "Use Cases", value: `${stats.totalUseCases}+` },
+    { label: "Categories", value: `${stats.totalCategories}` },
+    { label: "Integrations", value: `${stats.totalIntegrations}+` },
+  ];
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +53,7 @@ export function Hero() {
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-500/15 bg-amber-50 px-3 py-1">
             <div className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
             <span className="text-[11px] font-medium tracking-wide text-amber-700">
-              85+ community use cases &amp; growing
+              {stats.totalUseCases}+ community use cases &amp; growing
             </span>
           </div>
 

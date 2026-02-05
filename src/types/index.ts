@@ -189,3 +189,22 @@ export interface FilterState {
 export interface CategoryWithCount extends Category {
   useCaseCount: number;
 }
+
+// View types matching GROQ query projections (flattened slugs)
+
+export interface CategoryView {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+  icon: string;
+  color: string;
+  order: number;
+  useCaseCount: number;
+}
+
+export interface StatsView {
+  totalUseCases: number;
+  totalCategories: number;
+  totalIntegrations: number;
+}

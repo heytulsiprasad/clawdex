@@ -12,7 +12,7 @@ import {
   Palette,
   type LucideIcon,
 } from "lucide-react";
-import type { CategoryWithCount } from "@/types";
+import type { CategoryView } from "@/types";
 import { cn } from "@/lib/utils";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -81,13 +81,13 @@ const COLOR_MAP: Record<string, { icon: string; bg: string; border: string }> = 
   },
 };
 
-export function CategoryCard({ category }: { category: CategoryWithCount }) {
+export function CategoryCard({ category }: { category: CategoryView }) {
   const Icon = ICON_MAP[category.icon] || Zap;
   const colors = COLOR_MAP[category.color] || COLOR_MAP.amber;
 
   return (
     <Link
-      href={`/browse?category=${category.slug.current}`}
+      href={`/browse?category=${category.slug}`}
       className={cn(
         "group relative block rounded-xl border border-stone-200/80 bg-white p-4 transition-all duration-300",
         "shadow-[0_1px_2px_rgba(0,0,0,0.03)] hover:shadow-[0_2px_8px_rgba(0,0,0,0.05)]",
