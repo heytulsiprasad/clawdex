@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { BookmarkButton } from "@/components/use-case/bookmark-button";
 import { cn } from "@/lib/utils";
 import type { UseCaseCard } from "@/types";
 
@@ -183,7 +184,7 @@ export function WorkflowWizard({ isOpen, onClose }: WorkflowWizardProps) {
       <DialogContent
         className={cn(
           "max-h-[90vh] bg-[#fafaf8] border-stone-200 transition-[max-width] duration-300",
-          state.step === 3 ? "max-w-4xl" : "max-w-2xl",
+          state.step === 3 ? "max-w-5xl" : "max-w-2xl",
           state.step === 3 ? "overflow-hidden flex flex-col" : "overflow-y-auto"
         )}
         showCloseButton={false}
@@ -391,9 +392,12 @@ export function WorkflowWizard({ isOpen, onClose }: WorkflowWizardProps) {
                               >
                                 {useCase.category.name}
                               </Badge>
-                              <div className="flex items-center gap-1 text-stone-500">
-                                <ChevronUp className="w-3.5 h-3.5" />
-                                <span className="text-xs font-medium">{useCase.upvotes}</span>
+                              <div className="flex items-center gap-1.5">
+                                <BookmarkButton useCaseId={useCase._id} useCaseTitle={useCase.title} variant="card" />
+                                <div className="flex items-center gap-1 text-stone-500">
+                                  <ChevronUp className="w-3.5 h-3.5" />
+                                  <span className="text-xs font-medium">{useCase.upvotes}</span>
+                                </div>
                               </div>
                             </div>
                           </div>
