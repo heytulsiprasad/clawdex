@@ -1,10 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Users } from "lucide-react";
+import { Users } from "lucide-react";
+import { SubscribeForm } from "@/components/newsletter/subscribe-form";
 
 const FOOTER_LINKS = {
   Directory: [
@@ -21,17 +19,6 @@ const FOOTER_LINKS = {
 };
 
 export function Footer() {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      setSubmitted(true);
-      setEmail("");
-    }
-  };
-
   return (
     <footer className="relative border-t border-stone-200">
       {/* Top gradient line */}
@@ -56,35 +43,9 @@ export function Footer() {
             </p>
 
             {/* Newsletter */}
-            <form onSubmit={handleSubmit} className="mt-5">
-              {submitted ? (
-                <p className="text-[13px] font-medium text-amber-600">
-                  You&apos;re in. We&apos;ll send the best new use cases weekly.
-                </p>
-              ) : (
-                <>
-                  <p className="mb-2 text-[13px] font-medium text-foreground/80">
-                    Weekly use case roundup
-                  </p>
-                  <div className="flex gap-2">
-                    <Input
-                      type="email"
-                      placeholder="you@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="h-8 max-w-[220px] bg-white border-stone-200 text-[13px] placeholder:text-stone-400 focus-visible:border-amber-400 focus-visible:ring-amber-400/10"
-                    />
-                    <Button
-                      type="submit"
-                      size="sm"
-                      className="h-8 bg-stone-100 text-foreground/80 hover:bg-stone-200 hover:text-foreground border border-stone-200 text-[13px]"
-                    >
-                      <ArrowRight className="size-3.5" />
-                    </Button>
-                  </div>
-                </>
-              )}
-            </form>
+            <div className="mt-5">
+              <SubscribeForm source="footer" variant="footer" />
+            </div>
           </div>
 
           {/* Links */}

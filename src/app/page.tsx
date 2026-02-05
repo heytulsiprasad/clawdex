@@ -25,6 +25,7 @@ import {
 } from "@/lib/sanity/queries";
 import { faqPageSchema } from "@/lib/schema";
 import { FAQ } from "@/components/layout/faq";
+import { SubscribeForm } from "@/components/newsletter/subscribe-form";
 import { PERSONAS, type Persona } from "@/lib/data/personas";
 import type { UseCaseCard, CategoryView, StatsView } from "@/types";
 import type { LucideIcon } from "lucide-react";
@@ -220,16 +221,7 @@ export default async function HomePage() {
                 No spam, unsubscribe anytime.
               </p>
 
-              <form className="mt-6 flex gap-2 justify-center">
-                <input
-                  type="email"
-                  placeholder="you@email.com"
-                  className="h-10 w-full max-w-[260px] rounded-lg border border-stone-200 bg-white px-3.5 text-[13px] text-foreground placeholder:text-stone-400 outline-none transition-all focus:border-amber-400/50 focus:ring-2 focus:ring-amber-400/10"
-                />
-                <Button className="h-10 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold text-[13px] hover:from-amber-600 hover:to-orange-600 shadow-sm hover:shadow-md transition-all">
-                  Subscribe
-                </Button>
-              </form>
+              <SubscribeForm source="hero" variant="hero" />
             </div>
           </div>
         </section>
