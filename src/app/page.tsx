@@ -21,7 +21,10 @@ import {
   USE_CASES_QUERY,
   CATEGORIES_QUERY,
   STATS_QUERY,
+  FAQ_QUERY,
 } from "@/lib/sanity/queries";
+import { faqPageSchema } from "@/lib/schema";
+import { FAQ } from "@/components/layout/faq";
 import { PERSONAS, type Persona } from "@/lib/data/personas";
 import type { UseCaseCard, CategoryView, StatsView } from "@/types";
 import type { LucideIcon } from "lucide-react";
@@ -92,10 +95,11 @@ function SectionHeader({
 }
 
 export default async function HomePage() {
-  const [useCases, categories, stats] = await Promise.all([
+  const [useCases, categories, stats, faqs] = await Promise.all([
     client.fetch<UseCaseCard[]>(USE_CASES_QUERY),
     client.fetch<CategoryView[]>(CATEGORIES_QUERY),
     client.fetch<StatsView>(STATS_QUERY),
+    client.fetch<{ question: string; answer: string }[]>(FAQ_QUERY),
   ]);
 
   // Show top 6 use cases by upvotes for the featured section
@@ -108,6 +112,15 @@ export default async function HomePage() {
       <Header />
 
       <main>
+        {faqs.length > 0 && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(faqPageSchema(faqs)),
+            }}
+          />
+        )}
+
         {/* ── Hero ────────────────────────────────────────────── */}
         <Hero stats={stats} />
 
@@ -220,6 +233,16 @@ export default async function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* ── Divider ────────────────────────────────────────── */}
+        {faqs.length > 0 && (
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="h-[1px] bg-gradient-to-r from-transparent via-stone-300/40 to-transparent" />
+          </div>
+        )}
+
+        {/* ── FAQ ────────────────────────────────────────────── */}
+        <FAQ faqs={faqs} />
       </main>
 
       <Footer />

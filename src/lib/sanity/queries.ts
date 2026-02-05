@@ -198,3 +198,12 @@ export const ALL_CATEGORY_SLUGS_QUERY = defineQuery(`
     "slug": slug.current
   }
 `);
+
+// ─── FAQ Queries ────────────────────────────────────────────────────────────
+
+export const FAQ_QUERY = defineQuery(`
+  *[_type == "faq"] | order(order asc) {
+    question,
+    answer
+  }
+`);

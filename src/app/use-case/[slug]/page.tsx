@@ -21,6 +21,7 @@ import {
   RELATED_USE_CASES_QUERY,
 } from "@/lib/sanity/queries";
 import { urlFor } from "@/lib/sanity/image";
+import { articleSchema, breadcrumbSchema } from "@/lib/schema";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { UseCaseCardComponent } from "@/components/use-case/card";
@@ -188,11 +189,59 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
   const PlatformIcon =
     PLATFORM_ICONS[useCase.sourcePlatform] || PLATFORM_ICONS.other;
 
+  const SITE_URL =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://clawdex.com";
+
+  const firstImageUrl = imageMedia[0]?.asset
+    ? urlFor({
+        _type: "image",
+        asset: { _ref: imageMedia[0].asset._ref, _type: "reference" },
+      })
+        .width(1200)
+        .url() || undefined
+    : undefined;
+
+  const articleJsonLd = articleSchema({
+    title: useCase.title,
+    slug: useCase.slug,
+    description: useCase.description,
+    createdAt: useCase._createdAt,
+    creator: useCase.creator,
+    categoryName: useCase.category.name,
+    imageUrl: firstImageUrl,
+  });
+
+  const breadcrumbJsonLd = breadcrumbSchema([
+    { name: "Home", url: SITE_URL },
+    { name: "Browse", url: `${SITE_URL}/browse` },
+    {
+      name: useCase.category.name,
+      url: `${SITE_URL}/browse?category=${useCase.category.slug}`,
+    },
+    {
+      name: useCase.title,
+      url: `${SITE_URL}/use-case/${useCase.slug}`,
+    },
+  ]);
+
   return (
     <div className="min-h-screen bg-[#fafaf8] flex flex-col">
       <Header />
 
       <main className="flex-1">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(articleJsonLd),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(breadcrumbJsonLd),
+          }}
+        />
+
         {/* Breadcrumb */}
         <div className="border-b border-stone-200 bg-white">
           <div className="container mx-auto px-4 py-4">
