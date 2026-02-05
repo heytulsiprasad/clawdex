@@ -7,6 +7,7 @@ import {
   ExternalLink,
   Sparkles,
   Layers,
+  Play,
   Twitter,
   Github,
   Youtube,
@@ -175,9 +176,13 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
       ?.map((block) => block.children?.map((child) => child.text).join(""))
       .join("\n\n") || useCase.description;
 
-  const imageMedia = useCase.media.filter(
+  const imageMedia = (useCase.media ?? []).filter(
     (m) => m._type === "image" && m.asset
   );
+  const videoMedia = (useCase.media ?? []).filter(
+    (m) => m._type === "mediaEmbed" && m.mediaType === "video" && m.url
+  );
+  const hasMedia = imageMedia.length > 0 || videoMedia.length > 0;
 
   const PlatformIcon =
     PLATFORM_ICONS[useCase.sourcePlatform] || PLATFORM_ICONS.other;
@@ -296,39 +301,113 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                 </div>
               </div>
 
-              {/* Media Images */}
-              {imageMedia.length > 0 && (
+              {/* Media */}
+              {hasMedia && (
                 <div className="bg-white border border-stone-200 rounded-lg shadow-sm p-6 md:p-8">
                   <h2 className="text-2xl font-semibold text-stone-900 mb-4">
                     Media
                   </h2>
                   <div className="space-y-4">
-                    {imageMedia.map((media) => (
-                      <div key={media._key} className="rounded-lg overflow-hidden">
-                        <Image
-                          src={
-                            urlFor({
-                              _type: "image",
-                              asset: {
-                                _ref: media.asset!._ref,
-                                _type: "reference",
-                              },
-                            })
-                              .width(800)
-                              .url() || ""
-                          }
-                          alt={media.caption || "Use case media"}
-                          width={800}
-                          height={450}
-                          className="w-full h-auto"
-                        />
-                        {media.caption && (
-                          <p className="text-sm text-stone-600 mt-2">
-                            {media.caption}
+                    {/* Images (with play overlay on first if video exists) */}
+                    {imageMedia.map((media, idx) => {
+                      const isVideoThumbnail =
+                        videoMedia.length > 0 && idx === 0;
+
+                      if (isVideoThumbnail) {
+                        return (
+                          <a
+                            key={media._key}
+                            href={useCase.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group relative block rounded-lg overflow-hidden"
+                          >
+                            <Image
+                              src={
+                                urlFor({
+                                  _type: "image",
+                                  asset: {
+                                    _ref: media.asset!._ref,
+                                    _type: "reference",
+                                  },
+                                })
+                                  .width(800)
+                                  .url() || ""
+                              }
+                              alt={media.caption || "Video thumbnail"}
+                              width={800}
+                              height={450}
+                              className="w-full h-auto transition-opacity group-hover:opacity-90"
+                            />
+                            {/* Play overlay */}
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition-colors group-hover:bg-black/30">
+                              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-105">
+                                <Play className="size-6 text-stone-900 ml-0.5" />
+                              </div>
+                            </div>
+                            <p className="absolute bottom-3 left-3 text-[12px] font-medium text-white/80 bg-black/50 rounded-md px-2 py-0.5">
+                              Watch on{" "}
+                              {PLATFORM_LABELS[useCase.sourcePlatform]}
+                            </p>
+                          </a>
+                        );
+                      }
+
+                      return (
+                        <div
+                          key={media._key}
+                          className="rounded-lg overflow-hidden"
+                        >
+                          <Image
+                            src={
+                              urlFor({
+                                _type: "image",
+                                asset: {
+                                  _ref: media.asset!._ref,
+                                  _type: "reference",
+                                },
+                              })
+                                .width(800)
+                                .url() || ""
+                            }
+                            alt={media.caption || "Use case media"}
+                            width={800}
+                            height={450}
+                            className="w-full h-auto"
+                          />
+                          {media.caption && (
+                            <p className="text-sm text-stone-600 mt-2">
+                              {media.caption}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    {/* Video-only fallback: when there are video embeds but no thumbnail images */}
+                    {videoMedia.length > 0 && imageMedia.length === 0 && (
+                      <a
+                        href={useCase.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex items-center gap-4 rounded-lg border border-stone-200 bg-stone-50 p-6 transition-colors hover:border-amber-300 hover:bg-amber-50/50"
+                      >
+                        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-white shadow-sm transition-transform group-hover:scale-105 group-hover:border-amber-300">
+                          <Play className="size-6 text-stone-700 ml-0.5 group-hover:text-amber-700" />
+                        </div>
+                        <div>
+                          <p className="text-[15px] font-semibold text-stone-900 group-hover:text-amber-800">
+                            Watch video on{" "}
+                            {PLATFORM_LABELS[useCase.sourcePlatform]}
                           </p>
-                        )}
-                      </div>
-                    ))}
+                          <p className="mt-0.5 text-[13px] text-stone-500">
+                            This use case includes a video demo.
+                            Click to view on the original platform.
+                          </p>
+                        </div>
+                        <ExternalLink className="ml-auto size-4 shrink-0 text-stone-400 group-hover:text-amber-600" />
+                      </a>
+                    )}
                   </div>
                 </div>
               )}

@@ -30,14 +30,28 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
+# env files (catch-all, then allow examples)
 .env
-.env.local
-.env.*.local
+.env.*
 !.env.local.example
+!.env.production.example
 
 # vercel
 .vercel
+
+# sanity
+.sanity/
+
+# tool-generated artifacts
+.skill-archive/
+
+# caches
+.eslintcache
+.cache/
+.turbo/
+
+# logs (catch-all)
+*.log
 
 # typescript
 *.tsbuildinfo
