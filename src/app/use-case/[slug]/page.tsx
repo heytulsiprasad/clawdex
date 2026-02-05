@@ -24,6 +24,7 @@ import { urlFor } from "@/lib/sanity/image";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { UseCaseCardComponent } from "@/components/use-case/card";
+import { UpvoteButton } from "@/components/use-case/upvote-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -233,48 +234,61 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
               Back to Browse
             </Link>
 
-            <div className="max-w-4xl">
-              <div className="flex flex-wrap items-center gap-2 mb-4">
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    "font-medium",
-                    CATEGORY_COLORS[useCase.category.color] ||
-                      CATEGORY_COLORS.amber
-                  )}
-                >
-                  {useCase.category.name}
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    "font-medium",
-                    COMPLEXITY_CONFIG[useCase.complexity].className
-                  )}
-                >
-                  {COMPLEXITY_CONFIG[useCase.complexity].label}
-                </Badge>
-                <Badge variant="outline" className="font-medium">
-                  {TYPE_LABELS[useCase.type] || useCase.type}
-                </Badge>
-                {useCase.featured && (
+            <div className="flex items-start justify-between gap-6">
+              {/* Left: title content */}
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2 mb-4">
                   <Badge
                     variant="outline"
-                    className="font-medium text-amber-700 bg-amber-50 border-amber-200"
+                    className={cn(
+                      "font-medium",
+                      CATEGORY_COLORS[useCase.category.color] ||
+                        CATEGORY_COLORS.amber
+                    )}
                   >
-                    <Sparkles className="w-3 h-3 mr-1" />
-                    Featured
+                    {useCase.category.name}
                   </Badge>
-                )}
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "font-medium",
+                      COMPLEXITY_CONFIG[useCase.complexity].className
+                    )}
+                  >
+                    {COMPLEXITY_CONFIG[useCase.complexity].label}
+                  </Badge>
+                  <Badge variant="outline" className="font-medium">
+                    {TYPE_LABELS[useCase.type] || useCase.type}
+                  </Badge>
+                  {useCase.featured && (
+                    <Badge
+                      variant="outline"
+                      className="font-medium text-amber-700 bg-amber-50 border-amber-200"
+                    >
+                      <Sparkles className="w-3 h-3 mr-1" />
+                      Featured
+                    </Badge>
+                  )}
+                </div>
+
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-stone-900 mb-4">
+                  {useCase.title}
+                </h1>
+
+                <p className="text-lg text-stone-600 leading-relaxed">
+                  {useCase.description}
+                </p>
               </div>
 
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-stone-900 mb-4">
-                {useCase.title}
-              </h1>
+              {/* Right: upvote button — Product Hunt style */}
+              <div className="shrink-0 hidden md:block pt-1">
+                <UpvoteButton id={useCase._id} initialCount={useCase.upvotes} variant="hero" />
+              </div>
+            </div>
 
-              <p className="text-lg text-stone-600 leading-relaxed">
-                {useCase.description}
-              </p>
+            {/* Mobile upvote — below description */}
+            <div className="mt-5 md:hidden">
+              <UpvoteButton id={useCase._id} initialCount={useCase.upvotes} variant="detail" />
             </div>
           </div>
         </div>
@@ -523,13 +537,6 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                       <Layers className="w-3 h-3 mr-1" />
                       {TYPE_LABELS[useCase.type] || useCase.type}
                     </Badge>
-                  </div>
-                  <Separator />
-                  <div>
-                    <div className="text-sm text-stone-600 mb-1">Upvotes</div>
-                    <div className="font-semibold text-stone-900">
-                      {useCase.upvotes.toLocaleString()}
-                    </div>
                   </div>
                 </div>
               </div>

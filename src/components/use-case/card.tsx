@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ArrowUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { UpvoteButton } from "@/components/use-case/upvote-button";
 import type { UseCaseCard } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -84,12 +84,7 @@ export function UseCaseCardComponent({ useCase }: { useCase: UseCaseCard }) {
           <span className="text-[12px] text-muted-foreground/70 font-mono">
             @{useCase.creator.handle}
           </span>
-          <div className="flex items-center gap-1 text-stone-400 transition-colors group-hover:text-amber-600">
-            <ArrowUp className="size-3" />
-            <span className="text-[12px] font-medium tabular-nums">
-              {useCase.upvotes}
-            </span>
-          </div>
+          <UpvoteButton id={useCase._id} initialCount={useCase.upvotes} variant="card" />
         </div>
       </div>
     </Link>

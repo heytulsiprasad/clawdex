@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Plus } from "lucide-react";
@@ -22,11 +23,14 @@ export function Header() {
         <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
           {/* Logo */}
           <Link href="/" className="group flex items-center gap-2.5">
-            <div className="relative flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-amber-500 to-orange-600 shadow-sm">
-              <span className="text-xs font-bold text-white tracking-tight">
-                C
-              </span>
-            </div>
+            <Image
+              src="/icon-512.png"
+              alt="ClawDex logo"
+              width={28}
+              height={28}
+              className="rounded-md"
+              priority
+            />
             <span className="text-[15px] font-semibold tracking-[-0.02em] text-foreground">
               Claw
               <span className="text-amber-600">Dex</span>
