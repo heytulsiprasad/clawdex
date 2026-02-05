@@ -15,6 +15,7 @@ import {
   Globe,
 } from "lucide-react";
 
+import { TwitterVideoEmbed } from "@/components/media/twitter-video-embed";
 import { client } from "@/lib/sanity/client";
 import {
   USE_CASE_BY_SLUG_QUERY,
@@ -185,6 +186,10 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
     (m) => m._type === "mediaEmbed" && m.mediaType === "video" && m.url
   );
   const hasMedia = imageMedia.length > 0 || videoMedia.length > 0;
+  const isTwitterVideo =
+    useCase.sourcePlatform === "twitter" &&
+    videoMedia.length > 0 &&
+    !!useCase.sourceUrl;
 
   const PlatformIcon =
     PLATFORM_ICONS[useCase.sourcePlatform] || PLATFORM_ICONS.other;
@@ -371,12 +376,24 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                     Media
                   </h2>
                   <div className="space-y-4">
-                    {/* Images (with play overlay on first if video exists) */}
-                    {imageMedia.map((media, idx) => {
-                      const isVideoThumbnail =
-                        videoMedia.length > 0 && idx === 0;
+                    {/* Twitter video: render inline tweet embed */}
+                    {isTwitterVideo && (
+                      <TwitterVideoEmbed
+                        sourceUrl={useCase.sourceUrl}
+                        platformLabel={PLATFORM_LABELS[useCase.sourcePlatform]}
+                      />
+                    )}
 
-                      if (isVideoThumbnail) {
+                    {/* Images */}
+                    {imageMedia.map((media, idx) => {
+                      // Skip first image when tweet embed is shown (it renders its own media)
+                      if (isTwitterVideo && idx === 0) return null;
+
+                      // Non-Twitter video: first image gets play overlay linking to source
+                      const isNonTwitterVideoThumbnail =
+                        !isTwitterVideo && videoMedia.length > 0 && idx === 0;
+
+                      if (isNonTwitterVideoThumbnail) {
                         return (
                           <a
                             key={media._key}
@@ -447,30 +464,32 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                       );
                     })}
 
-                    {/* Video-only fallback: when there are video embeds but no thumbnail images */}
-                    {videoMedia.length > 0 && imageMedia.length === 0 && (
-                      <a
-                        href={useCase.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group flex items-center gap-4 rounded-lg border border-stone-200 bg-stone-50 p-6 transition-colors hover:border-amber-300 hover:bg-amber-50/50"
-                      >
-                        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-white shadow-sm transition-transform group-hover:scale-105 group-hover:border-amber-300">
-                          <Play className="size-6 text-stone-700 ml-0.5 group-hover:text-amber-700" />
-                        </div>
-                        <div>
-                          <p className="text-[15px] font-semibold text-stone-900 group-hover:text-amber-800">
-                            Watch video on{" "}
-                            {PLATFORM_LABELS[useCase.sourcePlatform]}
-                          </p>
-                          <p className="mt-0.5 text-[13px] text-stone-500">
-                            This use case includes a video demo.
-                            Click to view on the original platform.
-                          </p>
-                        </div>
-                        <ExternalLink className="ml-auto size-4 shrink-0 text-stone-400 group-hover:text-amber-600" />
-                      </a>
-                    )}
+                    {/* Non-Twitter video-only fallback: external link card */}
+                    {!isTwitterVideo &&
+                      videoMedia.length > 0 &&
+                      imageMedia.length === 0 && (
+                        <a
+                          href={useCase.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group flex items-center gap-4 rounded-lg border border-stone-200 bg-stone-50 p-6 transition-colors hover:border-amber-300 hover:bg-amber-50/50"
+                        >
+                          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-white shadow-sm transition-transform group-hover:scale-105 group-hover:border-amber-300">
+                            <Play className="size-6 text-stone-700 ml-0.5 group-hover:text-amber-700" />
+                          </div>
+                          <div>
+                            <p className="text-[15px] font-semibold text-stone-900 group-hover:text-amber-800">
+                              Watch video on{" "}
+                              {PLATFORM_LABELS[useCase.sourcePlatform]}
+                            </p>
+                            <p className="mt-0.5 text-[13px] text-stone-500">
+                              This use case includes a video demo. Click to view
+                              on the original platform.
+                            </p>
+                          </div>
+                          <ExternalLink className="ml-auto size-4 shrink-0 text-stone-400 group-hover:text-amber-600" />
+                        </a>
+                      )}
                   </div>
                 </div>
               )}

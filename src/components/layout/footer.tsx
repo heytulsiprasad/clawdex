@@ -16,6 +16,7 @@ const FOOTER_LINKS = {
     { href: "https://github.com/openclaw", label: "OpenClaw GitHub" },
     { href: "/categories/development-devops", label: "Dev Workflows" },
     { href: "/categories/smart-home-iot", label: "Smart Home" },
+    { href: "/categories/automation-workflows", label: "Automation" },
   ],
 };
 

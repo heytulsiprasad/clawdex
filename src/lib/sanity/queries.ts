@@ -165,6 +165,29 @@ export const CATEGORY_BY_SLUG_QUERY = defineQuery(`
   }
 `);
 
+export const USE_CASES_BY_CATEGORY_QUERY = defineQuery(`
+  *[_type == "useCase" && category->slug.current == $categorySlug] | order(upvotes desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    category->{
+      name,
+      "slug": slug.current,
+      icon,
+      color
+    },
+    complexity,
+    sourcePlatform,
+    integrations[]->{
+      name,
+      "slug": slug.current
+    },
+    creator,
+    upvotes
+  }
+`);
+
 // ─── Integration Queries ─────────────────────────────────────────────────────
 
 export const INTEGRATIONS_QUERY = defineQuery(`
