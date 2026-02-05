@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Zap } from "lucide-react";
 import { SubscribeForm } from "@/components/newsletter/subscribe-form";
 
@@ -29,9 +30,13 @@ export function Footer() {
           {/* Brand + Newsletter */}
           <div className="lg:col-span-5">
             <Link href="/" className="inline-flex items-center gap-2.5">
-              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-amber-500 to-orange-600">
-                <span className="text-[10px] font-bold text-white">C</span>
-              </div>
+              <Image
+                src="/icon-512.png"
+                alt="ClawDex logo"
+                width={24}
+                height={24}
+                className="rounded-md"
+              />
               <span className="text-sm font-semibold tracking-[-0.02em]">
                 Claw<span className="text-amber-600">Dex</span>
               </span>

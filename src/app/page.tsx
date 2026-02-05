@@ -126,7 +126,7 @@ export default async function HomePage() {
         <Hero stats={stats} />
 
         {/* ── Featured Use Cases ──────────────────────────────── */}
-        <section className="relative py-16 sm:py-20">
+        <section className="relative pt-6 pb-16 sm:pt-8 sm:pb-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">
             <SectionHeader
               label="Featured"
