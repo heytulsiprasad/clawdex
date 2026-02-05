@@ -63,7 +63,7 @@ export default async function CategoriesPage() {
         <Header />
 
         <main className="flex-1 pt-20">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-16">
             {/* Page Header */}
             <div className="mb-12">
               <p className="text-[11px] uppercase tracking-[0.08em] text-amber-600/70 mb-2">

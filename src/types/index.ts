@@ -14,6 +14,8 @@ export type SourcePlatform =
   | "reddit"
   | "youtube"
   | "github"
+  | "hackernews"
+  | "devto"
   | "other";
 
 export type SubmissionStatus = "pending" | "approved" | "rejected";
@@ -23,7 +25,9 @@ export type DiscoverySource =
   | "user-submission"
   | "auto-twitter"
   | "auto-reddit"
-  | "auto-github";
+  | "auto-github"
+  | "auto-hackernews"
+  | "auto-devto";
 
 export type PersonaTag =
   | "developer"

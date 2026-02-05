@@ -233,7 +233,7 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
     <div className="min-h-screen bg-[#fafaf8] flex flex-col">
       <Header />
 
-      <main className="flex-1">
+      <main className="flex-1 pt-14">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -249,37 +249,37 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
 
         {/* Breadcrumb */}
         <div className="border-b border-stone-200 bg-white">
-          <div className="container mx-auto px-4 py-4">
-            <nav className="flex items-center gap-2 text-sm text-stone-600">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 py-3">
+            <nav className="flex items-center gap-1.5 text-[13px] text-stone-500 min-w-0 overflow-hidden">
               <Link
                 href="/"
-                className="hover:text-stone-900 transition-colors"
+                className="shrink-0 hover:text-stone-900 transition-colors"
               >
                 Home
               </Link>
-              <span>/</span>
+              <span className="shrink-0 text-stone-300">/</span>
               <Link
                 href="/browse"
-                className="hover:text-stone-900 transition-colors"
+                className="shrink-0 hover:text-stone-900 transition-colors"
               >
                 Browse
               </Link>
-              <span>/</span>
+              <span className="shrink-0 text-stone-300">/</span>
               <Link
                 href={`/browse?category=${useCase.category.slug}`}
-                className="hover:text-stone-900 transition-colors"
+                className="shrink-0 hover:text-stone-900 transition-colors"
               >
                 {useCase.category.name}
               </Link>
-              <span>/</span>
-              <span className="text-stone-900 font-medium">{useCase.title}</span>
+              <span className="shrink-0 text-stone-300">/</span>
+              <span className="text-stone-900 font-medium truncate">{useCase.title}</span>
             </nav>
           </div>
         </div>
 
         {/* Hero Section */}
         <div className="bg-gradient-to-b from-white to-[#fafaf8] border-b border-stone-200">
-          <div className="container mx-auto px-4 py-8 md:py-12">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 md:py-12">
             <Link
               href="/browse"
               className="inline-flex items-center gap-2 text-sm text-stone-600 hover:text-stone-900 transition-colors mb-6"
@@ -348,7 +348,7 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
         </div>
 
         {/* Main Content */}
-        <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 md:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column - Main Content */}
             <div className="lg:col-span-2 space-y-8">

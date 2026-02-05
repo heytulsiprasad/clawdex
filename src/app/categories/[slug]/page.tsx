@@ -142,23 +142,23 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
         {/* Breadcrumb */}
         <div className="border-b border-stone-200 bg-white">
-          <div className="container mx-auto px-4 py-4">
-            <nav className="flex items-center gap-2 text-sm text-stone-600">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 py-3">
+            <nav className="flex items-center gap-1.5 text-[13px] text-stone-500 min-w-0 overflow-hidden">
               <Link
                 href="/"
-                className="hover:text-stone-900 transition-colors"
+                className="shrink-0 hover:text-stone-900 transition-colors"
               >
                 Home
               </Link>
-              <span>/</span>
+              <span className="shrink-0 text-stone-300">/</span>
               <Link
                 href="/categories"
-                className="hover:text-stone-900 transition-colors"
+                className="shrink-0 hover:text-stone-900 transition-colors"
               >
                 Categories
               </Link>
-              <span>/</span>
-              <span className="text-stone-900 font-medium">
+              <span className="shrink-0 text-stone-300">/</span>
+              <span className="text-stone-900 font-medium truncate">
                 {category.name}
               </span>
             </nav>
@@ -167,7 +167,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
         {/* Hero Section */}
         <div className="bg-gradient-to-b from-white to-[#fafaf8] border-b border-stone-200">
-          <div className="container mx-auto px-4 py-8 md:py-12">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 md:py-12">
             <Link
               href="/categories"
               className="inline-flex items-center gap-2 text-sm text-stone-600 hover:text-stone-900 transition-colors mb-6"
@@ -207,7 +207,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         </div>
 
         {/* Use Cases Grid */}
-        <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 md:py-12">
           {useCases.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {useCases.map((useCase) => (

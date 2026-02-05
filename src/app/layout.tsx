@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { websiteSchema, organizationSchema } from "@/lib/schema";
+import { PostHogProvider } from "./providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -69,7 +70,7 @@ export default function RootLayout({
             __html: JSON.stringify(organizationSchema()),
           }}
         />
-        {children}
+        <PostHogProvider>{children}</PostHogProvider>
       </body>
     </html>
   );

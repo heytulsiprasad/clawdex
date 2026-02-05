@@ -23,6 +23,8 @@ export const submission = defineType({
           { title: "Reddit", value: "reddit" },
           { title: "YouTube", value: "youtube" },
           { title: "GitHub", value: "github" },
+          { title: "Hacker News", value: "hackernews" },
+          { title: "Dev.to", value: "devto" },
           { title: "Other", value: "other" },
         ],
       },
