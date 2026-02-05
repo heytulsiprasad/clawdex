@@ -14,6 +14,8 @@ export const MOCK_USE_CASES: UseCaseCard[] = [
       color: "amber",
     },
     complexity: "intermediate",
+    type: "workflow",
+    personas: ["productivity-enthusiast", "solo-founder"],
     integrations: [
       { name: "Gmail", slug: "gmail" },
       { name: "Browser Automation", slug: "browser-automation" },
@@ -35,6 +37,8 @@ export const MOCK_USE_CASES: UseCaseCard[] = [
       color: "orange",
     },
     complexity: "advanced",
+    type: "multi-agent",
+    personas: ["developer", "solo-founder"],
     integrations: [
       { name: "Slack", slug: "slack" },
       { name: "Notion", slug: "notion" },
@@ -56,6 +60,8 @@ export const MOCK_USE_CASES: UseCaseCard[] = [
       color: "green",
     },
     complexity: "intermediate",
+    type: "skill",
+    personas: ["smart-home-enthusiast", "family-manager"],
     integrations: [
       { name: "Home Assistant", slug: "home-assistant" },
       { name: "HomePod", slug: "homepod" },
@@ -77,6 +83,8 @@ export const MOCK_USE_CASES: UseCaseCard[] = [
       color: "blue",
     },
     complexity: "intermediate",
+    type: "workflow",
+    personas: ["developer", "solo-founder"],
     integrations: [
       { name: "GitHub", slug: "github" },
       { name: "Vercel", slug: "vercel" },
@@ -98,6 +106,8 @@ export const MOCK_USE_CASES: UseCaseCard[] = [
       color: "pink",
     },
     complexity: "beginner",
+    type: "workflow",
+    personas: ["family-manager", "productivity-enthusiast"],
     integrations: [
       { name: "Google Calendar", slug: "google-calendar" },
       { name: "Todoist", slug: "todoist" },
@@ -119,6 +129,8 @@ export const MOCK_USE_CASES: UseCaseCard[] = [
       color: "indigo",
     },
     complexity: "intermediate",
+    type: "workflow",
+    personas: ["productivity-enthusiast", "content-creator"],
     integrations: [
       { name: "YouTube", slug: "youtube" },
       { name: "Obsidian", slug: "obsidian" },

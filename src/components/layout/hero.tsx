@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
+import { WorkflowWizard } from "@/components/wizard/workflow-wizard";
 import type { StatsView } from "@/types";
 
 export function Hero({ stats }: { stats: StatsView }) {
   const [search, setSearch] = useState("");
+  const [wizardOpen, setWizardOpen] = useState(false);
   const router = useRouter();
 
   const STATS = [
@@ -15,11 +17,24 @@ export function Hero({ stats }: { stats: StatsView }) {
     { label: "Integrations", value: `${stats.totalIntegrations}+` },
   ];
 
+  const SEARCH_SUGGESTIONS = [
+    "Email workflows",
+    "Smart home",
+    "Social media",
+    "Calendar automation",
+    "Data analysis",
+    "Business ops",
+  ];
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (search.trim()) {
       router.push(`/browse?search=${encodeURIComponent(search.trim())}`);
     }
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    router.push(`/browse?search=${encodeURIComponent(suggestion)}`);
   };
 
   return (
@@ -59,12 +74,12 @@ export function Hero({ stats }: { stats: StatsView }) {
 
           {/* Headline */}
           <h1 className="text-3xl font-bold tracking-[-0.03em] leading-[1.15] sm:text-5xl sm:leading-[1.1]">
-            <span className="text-foreground">Discover what people</span>
+            <span className="text-foreground">Discover What's Possible</span>
             <br />
-            <span className="text-foreground">are building with </span>
+            <span className="text-foreground">with </span>
             <span className="relative inline-block">
               <span className="bg-gradient-to-r from-amber-600 via-orange-500 to-amber-600 bg-clip-text text-transparent">
-                OpenClaw
+                AI Agents
               </span>
               {/* Underline accent */}
               <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-amber-500/50 via-orange-500/30 to-transparent rounded-full" />
@@ -73,9 +88,9 @@ export function Hero({ stats }: { stats: StatsView }) {
 
           {/* Subtitle */}
           <p className="mt-5 text-[15px] leading-relaxed text-muted-foreground sm:text-base">
-            Filter by category, complexity, and integrations.
+            Browse {stats.totalUseCases}+ real workflows people use to automate their work, home, and business.
             <br className="hidden sm:block" />
-            From smart home setups to multi-agent teams — find your next build.
+            No code required to get started.
           </p>
 
           {/* ── Search Bar ───────────────────────────────────── */}
@@ -89,7 +104,7 @@ export function Hero({ stats }: { stats: StatsView }) {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search use cases, integrations, categories..."
+                placeholder="What do you want to automate?"
                 className="h-11 flex-1 bg-transparent px-3 text-[14px] text-foreground placeholder:text-stone-400 outline-none"
               />
               {search && (
@@ -101,7 +116,35 @@ export function Hero({ stats }: { stats: StatsView }) {
                 </button>
               )}
             </div>
+
+            {/* ── Search Suggestions ──────────────────────────── */}
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+              {SEARCH_SUGGESTIONS.map((suggestion) => (
+                <button
+                  key={suggestion}
+                  type="button"
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className="rounded-full border border-stone-200 bg-stone-100 px-3 py-1.5 text-[12px] font-medium text-stone-600 transition-colors hover:bg-stone-200 hover:text-stone-800"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+
+            {/* ── Workflow Wizard CTA ─────────────────────────── */}
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={() => setWizardOpen(true)}
+                className="inline-flex items-center gap-1 text-sm font-medium text-amber-600 transition-colors hover:text-amber-700"
+              >
+                Not sure where to start? Try our Workflow Wizard
+                <span className="text-base">→</span>
+              </button>
+            </div>
           </form>
+
+          <WorkflowWizard isOpen={wizardOpen} onClose={() => setWizardOpen(false)} />
 
           {/* ── Stats ────────────────────────────────────────── */}
           <div className="mt-10 flex items-center justify-center gap-8 sm:gap-12">

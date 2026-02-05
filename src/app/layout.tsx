@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { websiteSchema, organizationSchema } from "@/lib/schema";
 import { PostHogProvider } from "./providers";
+import { AuthProvider } from "@/lib/firebase/auth-context";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -70,7 +71,9 @@ export default function RootLayout({
             __html: JSON.stringify(organizationSchema()),
           }}
         />
-        <PostHogProvider>{children}</PostHogProvider>
+        <PostHogProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </PostHogProvider>
       </body>
     </html>
   );

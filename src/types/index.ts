@@ -172,6 +172,8 @@ export interface UseCaseCard {
     color: string;
   };
   complexity: Complexity;
+  type: UseCaseType;
+  personas: PersonaTag[];
   sourcePlatform: SourcePlatform;
   integrations: {
     name: string;

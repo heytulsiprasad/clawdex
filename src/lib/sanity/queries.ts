@@ -15,6 +15,8 @@ export const USE_CASES_QUERY = defineQuery(`
       color
     },
     complexity,
+    type,
+    personas,
     sourcePlatform,
     integrations[]->{
       name,
@@ -38,6 +40,8 @@ export const FEATURED_USE_CASES_QUERY = defineQuery(`
       color
     },
     complexity,
+    type,
+    personas,
     sourcePlatform,
     integrations[]->{
       name,
@@ -129,6 +133,8 @@ export const FILTERED_USE_CASES_QUERY = defineQuery(`
       color
     },
     complexity,
+    type,
+    personas,
     sourcePlatform,
     integrations[]->{
       name,

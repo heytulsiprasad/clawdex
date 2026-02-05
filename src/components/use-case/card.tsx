@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Twitter, Github, Youtube, MessageSquare, Globe } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { UpvoteButton } from "@/components/use-case/upvote-button";
+import { BookmarkButton } from "@/components/use-case/bookmark-button";
 import type { UseCaseCard } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -106,7 +109,10 @@ export function UseCaseCardComponent({ useCase }: { useCase: UseCaseCard }) {
             </span>
             <PlatformIcon className="size-3 text-muted-foreground/50" />
           </div>
-          <UpvoteButton id={useCase._id} initialCount={useCase.upvotes} variant="card" />
+          <div className="flex items-center gap-1.5">
+            <BookmarkButton useCaseId={useCase._id} useCaseTitle={useCase.title} variant="card" />
+            <UpvoteButton id={useCase._id} initialCount={useCase.upvotes} variant="card" />
+          </div>
         </div>
       </div>
     </Link>

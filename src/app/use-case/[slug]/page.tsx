@@ -13,6 +13,10 @@ import {
   Youtube,
   MessageSquare,
   Globe,
+  Clock,
+  Zap,
+  MessageCircle,
+  Puzzle,
 } from "lucide-react";
 
 import { TwitterVideoEmbed } from "@/components/media/twitter-video-embed";
@@ -27,6 +31,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { UseCaseCardComponent } from "@/components/use-case/card";
 import { UpvoteButton } from "@/components/use-case/upvote-button";
+import { BookmarkButton } from "@/components/use-case/bookmark-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -67,6 +72,29 @@ const TYPE_LABELS: Record<string, string> = {
   "cron-job": "Cron Job",
   "multi-agent": "Multi-Agent",
   hardware: "Hardware Setup",
+};
+
+const COMPLEXITY_EFFORT: Record<string, string> = {
+  beginner: "~15 minutes",
+  intermediate: "~1 hour",
+  advanced: "A few hours",
+};
+
+const PERSONA_ID_MAP: Record<string, string> = {
+  Developer: "developer",
+  "Solo Founder": "solo-founder",
+  "Family Manager": "family-manager",
+  "Productivity Enthusiast": "productivity-enthusiast",
+  "Smart Home Enthusiast": "smart-home-enthusiast",
+  "Content Creator": "content-creator",
+};
+
+const CHANNEL_LABELS: Record<string, string> = {
+  whatsapp: "WhatsApp",
+  telegram: "Telegram",
+  discord: "Discord",
+  slack: "Slack",
+  imessage: "iMessage",
 };
 
 const PLATFORM_ICONS: Record<string, React.ElementType> = {
@@ -125,7 +153,10 @@ interface UseCaseDetail {
     mediaType?: string;
     caption?: string;
   }>;
-  setupSteps?: unknown[];
+  setupSteps?: Array<{
+    _type: "block";
+    children: Array<{ text: string }>;
+  }>;
   upvotes: number;
   featured: boolean;
   discoverySource: string;
@@ -178,6 +209,11 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
     useCase.longDescription
       ?.map((block) => block.children?.map((child) => child.text).join(""))
       .join("\n\n") || useCase.description;
+
+  const setupStepsText = useCase.setupSteps
+    ?.map((block) => block.children?.map((child) => child.text).join(""))
+    .filter((text) => text.trim().length > 0)
+    .join("\n\n");
 
   const imageMedia = (useCase.media ?? []).filter(
     (m) => m._type === "image" && m.asset
@@ -335,14 +371,16 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
               </div>
 
               {/* Right: upvote button — Product Hunt style */}
-              <div className="shrink-0 hidden md:block pt-1">
+              <div className="shrink-0 hidden md:flex flex-col items-center gap-3 pt-1">
                 <UpvoteButton id={useCase._id} initialCount={useCase.upvotes} variant="hero" />
+                <BookmarkButton useCaseId={useCase._id} useCaseTitle={useCase.title} variant="detail" />
               </div>
             </div>
 
             {/* Mobile upvote — below description */}
-            <div className="mt-5 md:hidden">
+            <div className="mt-5 md:hidden space-y-3">
               <UpvoteButton id={useCase._id} initialCount={useCase.upvotes} variant="detail" />
+              <BookmarkButton useCaseId={useCase._id} useCaseTitle={useCase.title} variant="detail" />
             </div>
           </div>
         </div>
@@ -368,6 +406,31 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                   ))}
                 </div>
               </div>
+
+              {/* How to Set This Up */}
+              {setupStepsText && (
+                <div className="bg-white border border-stone-200 rounded-lg shadow-sm p-6 md:p-8">
+                  <h2 className="text-2xl font-semibold text-stone-900 mb-4 flex items-center gap-2">
+                    <Zap className="w-6 h-6 text-amber-600" />
+                    How to Set This Up
+                  </h2>
+                  <div className="prose prose-stone max-w-none">
+                    {setupStepsText.split("\n\n").map((step, idx) => (
+                      <div
+                        key={idx}
+                        className="flex gap-4 mb-4 last:mb-0 items-start"
+                      >
+                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-sm font-semibold text-amber-700">
+                          {idx + 1}
+                        </div>
+                        <p className="text-stone-700 leading-relaxed flex-1 pt-0.5">
+                          {step}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Media */}
               {hasMedia && (
@@ -529,6 +592,73 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
 
             {/* Right Column - Sidebar */}
             <div className="space-y-6">
+              {/* What You'll Need */}
+              <div className="bg-gradient-to-br from-amber-50 to-stone-50 border border-amber-200 rounded-lg shadow-sm p-6">
+                <h3 className="font-semibold text-stone-900 mb-4 flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-amber-600" />
+                  What You&apos;ll Need
+                </h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-start gap-3">
+                    <Clock className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-stone-600 mb-0.5">Estimated effort</div>
+                      <div className="font-medium text-stone-900">
+                        {COMPLEXITY_EFFORT[useCase.complexity]}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Layers className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-stone-600 mb-0.5">Complexity</div>
+                      <div className="font-medium text-stone-900">
+                        {COMPLEXITY_CONFIG[useCase.complexity].label}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Layers className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-stone-600 mb-0.5">Type</div>
+                      <div className="font-medium text-stone-900">
+                        {TYPE_LABELS[useCase.type] || useCase.type}
+                      </div>
+                    </div>
+                  </div>
+                  {useCase.channels && useCase.channels.length > 0 && (
+                    <div className="flex items-start gap-3">
+                      <MessageCircle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                      <div>
+                        <div className="text-stone-600 mb-1.5">Channels</div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {useCase.channels.map((channel) => (
+                            <Badge
+                              key={channel}
+                              variant="outline"
+                              className="text-[11px] font-medium text-amber-700 bg-white border-amber-200"
+                            >
+                              {CHANNEL_LABELS[channel] || channel}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {useCase.integrations && useCase.integrations.length > 0 && (
+                    <div className="flex items-start gap-3">
+                      <Puzzle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                      <div>
+                        <div className="text-stone-600 mb-0.5">Integrations</div>
+                        <div className="font-medium text-stone-900">
+                          {useCase.integrations.map((i) => i.name).join(", ")}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Creator Card */}
               <div className="bg-white border border-stone-200 rounded-lg shadow-sm p-6">
                 <h3 className="font-semibold text-stone-900 mb-4">Creator</h3>
@@ -633,15 +763,19 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                     Ideal For
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {useCase.personas.map((persona, idx) => (
-                      <Badge
-                        key={idx}
-                        variant="outline"
-                        className="font-medium text-stone-700 bg-stone-50 border-stone-200"
-                      >
-                        {persona}
-                      </Badge>
-                    ))}
+                    {useCase.personas.map((persona, idx) => {
+                      const personaId = PERSONA_ID_MAP[persona] || persona;
+                      return (
+                        <Link key={idx} href={`/browse?persona=${personaId}`}>
+                          <Badge
+                            variant="outline"
+                            className="font-medium text-stone-700 bg-stone-50 border-stone-200 cursor-pointer hover:bg-stone-100 hover:border-stone-300 transition-colors"
+                          >
+                            {persona}
+                          </Badge>
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
               )}

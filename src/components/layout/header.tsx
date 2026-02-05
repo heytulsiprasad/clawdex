@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Plus } from "lucide-react";
+import { Menu, X, Plus, LogIn, Bookmark, LogOut, User } from "lucide-react";
+import { useAuth } from "@/lib/firebase/auth-context";
 
 const NAV_LINKS = [
   { href: "/browse", label: "Browse" },
@@ -13,10 +14,30 @@ const NAV_LINKS = [
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const { user, loading, isConfigured, signInWithGoogle, signOut } = useAuth();
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+
+    if (userMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [userMenuOpen]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    setUserMenuOpen(false);
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
-      {/* Gradient line at the very top */}
       <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
 
       <div className="bg-white/80 backdrop-blur-xl border-b border-stone-200/80">
@@ -52,6 +73,59 @@ export function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden items-center gap-3 md:flex">
+            {isConfigured && !loading && (
+              <>
+                {user ? (
+                  <div className="relative" ref={userMenuRef}>
+                    <button
+                      onClick={() => setUserMenuOpen(!userMenuOpen)}
+                      className="flex h-8 w-8 items-center justify-center rounded-full border border-stone-200 bg-white transition-all hover:border-stone-300 hover:shadow-sm"
+                    >
+                      {user.photoURL ? (
+                        <Image
+                          src={user.photoURL}
+                          alt={user.displayName || "User"}
+                          width={32}
+                          height={32}
+                          className="rounded-full"
+                        />
+                      ) : (
+                        <User className="size-4 text-stone-600" />
+                      )}
+                    </button>
+
+                    {userMenuOpen && (
+                      <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-stone-200 bg-white py-1 shadow-lg">
+                        <Link
+                          href="/bookmarks"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-stone-700 transition-colors hover:bg-stone-50"
+                        >
+                          <Bookmark className="size-4" />
+                          My Bookmarks
+                        </Link>
+                        <button
+                          onClick={handleSignOut}
+                          className="flex w-full items-center gap-2 px-4 py-2 text-sm text-stone-700 transition-colors hover:bg-stone-50"
+                        >
+                          <LogOut className="size-4" />
+                          Sign out
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    onClick={signInWithGoogle}
+                    className="flex items-center gap-2 rounded-md border border-stone-200 bg-white px-3 py-1.5 text-[13px] font-medium text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
+                  >
+                    <LogIn className="size-3.5" />
+                    Sign in
+                  </button>
+                )}
+              </>
+            )}
+
             <Button
               asChild
               size="sm"
@@ -87,7 +161,7 @@ export function Header() {
                   {link.label}
                 </Link>
               ))}
-              <div className="mt-2 pt-2 border-t border-stone-200/60">
+              <div className="mt-2 pt-2 border-t border-stone-200/60 space-y-2">
                 <Button
                   asChild
                   size="sm"
@@ -98,6 +172,44 @@ export function Header() {
                     Submit Use Case
                   </Link>
                 </Button>
+
+                {isConfigured && !loading && (
+                  <>
+                    {user ? (
+                      <>
+                        <Link
+                          href="/bookmarks"
+                          onClick={() => setMobileOpen(false)}
+                          className="flex items-center justify-center gap-2 rounded-md border border-stone-200 bg-white px-3 py-2 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-50"
+                        >
+                          <Bookmark className="size-4" />
+                          My Bookmarks
+                        </Link>
+                        <button
+                          onClick={() => {
+                            handleSignOut();
+                            setMobileOpen(false);
+                          }}
+                          className="flex w-full items-center justify-center gap-2 rounded-md border border-stone-200 bg-white px-3 py-2 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-50"
+                        >
+                          <LogOut className="size-4" />
+                          Sign out
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          signInWithGoogle();
+                          setMobileOpen(false);
+                        }}
+                        className="flex w-full items-center justify-center gap-2 rounded-md border border-stone-200 bg-white px-3 py-2 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-50"
+                      >
+                        <LogIn className="size-4" />
+                        Sign in with Google
+                      </button>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </div>
