@@ -186,51 +186,80 @@ export async function GET(request: NextRequest) {
             )}
           </div>
 
-          {/* Footer */}
+          {/* Footer with CTA */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
+              justifyContent: "space-between",
             }}
           >
-            <span
-              style={{
-                fontSize: "24px",
-                fontWeight: 700,
-                color: "#d97706",
-                marginRight: "8px",
-              }}
-            >
-              90+
-            </span>
-            <span
-              style={{
-                fontSize: "14px",
-                color: "#a8a29e",
-                fontWeight: 500,
-                textTransform: "uppercase",
-                marginRight: "32px",
-              }}
-            >
-              Use Cases
-            </span>
             <div
               style={{
-                width: "1px",
-                height: "20px",
-                background: "#d6d3d1",
-                marginRight: "32px",
-              }}
-            />
-            <span
-              style={{
-                fontSize: "14px",
-                color: "#a8a29e",
-                fontWeight: 500,
+                display: "flex",
+                alignItems: "center",
               }}
             >
-              www.clawdex.io
-            </span>
+              <span
+                style={{
+                  fontSize: "24px",
+                  fontWeight: 700,
+                  color: "#d97706",
+                  marginRight: "8px",
+                }}
+              >
+                90+
+              </span>
+              <span
+                style={{
+                  fontSize: "14px",
+                  color: "#a8a29e",
+                  fontWeight: 500,
+                  textTransform: "uppercase",
+                  marginRight: "32px",
+                }}
+              >
+                Use Cases
+              </span>
+              <div
+                style={{
+                  width: "1px",
+                  height: "20px",
+                  background: "#d6d3d1",
+                  marginRight: "32px",
+                }}
+              />
+              <span
+                style={{
+                  fontSize: "14px",
+                  color: "#a8a29e",
+                  fontWeight: 500,
+                }}
+              >
+                www.clawdex.io
+              </span>
+            </div>
+
+            {/* CTA Button */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                borderRadius: "8px",
+                padding: "12px 24px",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "16px",
+                  fontWeight: 600,
+                  color: "white",
+                }}
+              >
+                Browse Now →
+              </span>
+            </div>
           </div>
         </div>
 

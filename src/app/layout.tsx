@@ -47,9 +47,9 @@ export const metadata: Metadata = {
     telephone: false,
   },
   openGraph: {
-    title: "ClawDex — Discover AI Agent Workflows",
+    title: "ClawDex — Discover 90+ AI Agent Workflows & Automations",
     description:
-      "The community directory for AI agent workflows. 90+ real use cases from smart home to developer tools.",
+      "The community directory for AI agent workflows. Browse 90+ real OpenClaw use cases, filter by category and complexity, and automate your next project.",
     type: "website",
     locale: "en_US",
     siteName: "ClawDex",
@@ -66,9 +66,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ClawDex — Discover AI Agent Workflows",
+    title: "ClawDex — Discover 90+ AI Agent Workflows & Automations",
     description:
-      "The community directory for AI agent workflows. 90+ real use cases from smart home to developer tools.",
+      "The community directory for AI agent workflows. Browse 90+ real OpenClaw use cases, filter by category and complexity, and automate your next project.",
     images: [`${siteUrl}/og`],
     creator: "@clawdex",
   },
