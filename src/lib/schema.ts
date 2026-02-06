@@ -1,5 +1,5 @@
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://clawdex.com";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.clawdex.io";
 const SITE_NAME = "ClawDex";
 
 // ─── WebSite + SearchAction (root layout) ─────────────────────────────────

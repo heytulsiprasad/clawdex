@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { client } from "@/lib/sanity/client";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://clawdex.io";
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.clawdex.io";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all use case slugs with their last modified dates

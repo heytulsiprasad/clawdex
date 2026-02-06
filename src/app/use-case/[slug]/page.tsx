@@ -186,7 +186,7 @@ export async function generateMetadata({
     };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://clawdex.io";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.clawdex.io";
   const ogImageUrl = new URL(`${siteUrl}/og`);
   ogImageUrl.searchParams.set("title", useCase.title);
   ogImageUrl.searchParams.set("subtitle", useCase.description.slice(0, 100));
@@ -273,7 +273,7 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
     PLATFORM_ICONS[useCase.sourcePlatform] || PLATFORM_ICONS.other;
 
   const SITE_URL =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://clawdex.com";
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.clawdex.io";
 
   const firstImageUrl = imageMedia[0]?.asset
     ? urlFor({

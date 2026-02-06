@@ -117,7 +117,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     { categorySlug: slug }
   );
 
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://clawdex.com";
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.clawdex.io";
   const breadcrumbJsonLd = breadcrumbSchema([
     { name: "Home", url: SITE_URL },
     { name: "Categories", url: `${SITE_URL}/categories` },

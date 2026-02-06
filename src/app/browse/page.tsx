@@ -5,7 +5,7 @@ import { collectionPageSchema } from "@/lib/schema";
 import type { UseCaseCard, CategoryView } from "@/types";
 import { BrowseClient } from "./browse-client";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://clawdex.io";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.clawdex.io";
 
 export const metadata: Metadata = {
   title: "Browse AI Workflows & Use Cases",

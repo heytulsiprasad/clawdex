@@ -7,7 +7,7 @@ import type { CategoryView } from "@/types";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://clawdex.io";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.clawdex.io";
 
 export const metadata: Metadata = {
   title: "Browse by Category",
@@ -69,7 +69,7 @@ export default async function CategoriesPage() {
     "@type": "CollectionPage",
     name: "Categories",
     description: "Browse OpenClaw use cases by category.",
-    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://clawdex.com"}/categories`,
+    url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.clawdex.io"}/categories`,
   };
 
   return (
