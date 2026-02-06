@@ -7,12 +7,31 @@ import type { CategoryView } from "@/types";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://claudex.io";
+
 export const metadata: Metadata = {
-  title: "Categories | ClawDex",
-  description: "Browse OpenClaw use cases by category. Discover automation, integration, and workflow solutions.",
+  title: "Browse by Category",
+  description: "Explore AI agent workflows by category. Smart home, development, productivity, automation, and more.",
   openGraph: {
     title: "Categories | ClawDex",
-    description: "Browse OpenClaw use cases by category. Discover automation, integration, and workflow solutions.",
+    description: "Explore AI agent workflows by category. Smart home, development, productivity, automation, and more.",
+    url: `${siteUrl}/categories`,
+    images: [
+      {
+        url: `${siteUrl}/og?title=Explore%20by%20Category&subtitle=Smart%20home%2C%20development%2C%20productivity%2C%20and%20more`,
+        width: 1200,
+        height: 630,
+        alt: "Browse Categories on ClawDex",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Browse by Category | ClawDex",
+    description: "Explore AI agent workflows by category. Smart home, development, productivity, and more.",
+  },
+  alternates: {
+    canonical: `${siteUrl}/categories`,
   },
 };
 

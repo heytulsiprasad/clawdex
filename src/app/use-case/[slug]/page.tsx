@@ -186,13 +186,45 @@ export async function generateMetadata({
     };
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://claudex.io";
+  const ogImageUrl = new URL(`${siteUrl}/og`);
+  ogImageUrl.searchParams.set("title", useCase.title);
+  ogImageUrl.searchParams.set("subtitle", useCase.description.slice(0, 100));
+  ogImageUrl.searchParams.set("category", useCase.category.name);
+  ogImageUrl.searchParams.set("complexity", useCase.complexity);
+
   return {
-    title: `${useCase.title} | ClawDex`,
+    title: useCase.title,
     description: useCase.description,
+    keywords: [
+      useCase.category.name,
+      useCase.complexity,
+      "OpenClaw",
+      "AI workflow",
+      ...(useCase.integrations?.map((i) => i.name) || []),
+    ],
     openGraph: {
       title: useCase.title,
       description: useCase.description,
       type: "article",
+      url: `${siteUrl}/use-case/${slug}`,
+      images: [
+        {
+          url: ogImageUrl.toString(),
+          width: 1200,
+          height: 630,
+          alt: useCase.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: useCase.title,
+      description: useCase.description,
+      images: [ogImageUrl.toString()],
+    },
+    alternates: {
+      canonical: `${siteUrl}/use-case/${slug}`,
     },
   };
 }
