@@ -7,7 +7,7 @@ import type { CategoryView } from "@/types";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://claudex.io";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://clawdex.io";
 
 export const metadata: Metadata = {
   title: "Browse by Category",

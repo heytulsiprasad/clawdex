@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://claudex.io";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://clawdex.io";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

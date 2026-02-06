@@ -287,7 +287,7 @@ export async function GET(request: NextRequest) {
                   letterSpacing: "0.05em",
                 }}
               >
-                claudex.io
+                clawdex.io
               </span>
             </div>
           </div>

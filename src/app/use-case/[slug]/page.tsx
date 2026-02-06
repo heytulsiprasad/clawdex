@@ -186,7 +186,7 @@ export async function generateMetadata({
     };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://claudex.io";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://clawdex.io";
   const ogImageUrl = new URL(`${siteUrl}/og`);
   ogImageUrl.searchParams.set("title", useCase.title);
   ogImageUrl.searchParams.set("subtitle", useCase.description.slice(0, 100));
