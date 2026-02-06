@@ -6,9 +6,10 @@ export const runtime = "edge";
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
-  // Dynamic params for use-case pages
   const title = searchParams.get("title") || "Discover AI Agent Workflows";
-  const subtitle = searchParams.get("subtitle") || "The community directory for OpenClaw use cases";
+  const subtitle =
+    searchParams.get("subtitle") ||
+    "The community directory for OpenClaw use cases";
   const category = searchParams.get("category");
   const complexity = searchParams.get("complexity");
 
@@ -21,48 +22,17 @@ export async function GET(request: NextRequest) {
           display: "flex",
           flexDirection: "column",
           backgroundColor: "#fafaf9",
-          position: "relative",
-          overflow: "hidden",
+          fontFamily: "system-ui, sans-serif",
         }}
       >
-        {/* Background pattern - diagonal lines */}
+        {/* Top gradient bar */}
         <div
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundImage: `repeating-linear-gradient(
-              -45deg,
-              transparent,
-              transparent 40px,
-              rgba(217, 119, 6, 0.03) 40px,
-              rgba(217, 119, 6, 0.03) 80px
-            )`,
+            height: "8px",
+            width: "100%",
+            background: "linear-gradient(90deg, #f59e0b, #d97706, #ea580c)",
           }}
         />
-
-        {/* Decorative claw marks in corner */}
-        <div
-          style={{
-            position: "absolute",
-            top: -100,
-            right: -50,
-            display: "flex",
-            opacity: 0.08,
-          }}
-        >
-          <svg width="400" height="400" viewBox="0 0 100 100">
-            <path
-              d="M30 10 L40 90 M50 5 L60 95 M70 10 L80 90"
-              stroke="#d97706"
-              strokeWidth="8"
-              strokeLinecap="round"
-              fill="none"
-            />
-          </svg>
-        </div>
 
         {/* Main content */}
         <div
@@ -70,63 +40,54 @@ export async function GET(request: NextRequest) {
             display: "flex",
             flexDirection: "column",
             flex: 1,
-            padding: "60px 80px",
+            padding: "48px 64px",
             justifyContent: "space-between",
           }}
         >
-          {/* Top: Logo */}
+          {/* Logo section */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "16px",
             }}
           >
-            {/* Claw icon */}
             <div
               style={{
-                width: "56px",
-                height: "56px",
-                borderRadius: "12px",
-                background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                width: "48px",
+                height: "48px",
+                borderRadius: "10px",
+                background: "linear-gradient(135deg, #f59e0b, #d97706)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 4px 12px rgba(217, 119, 6, 0.3)",
+                marginRight: "12px",
               }}
             >
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M6 4L8 20M11 3L13 21M16 4L18 20"
-                  stroke="white"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-              </svg>
+              <div
+                style={{
+                  color: "white",
+                  fontSize: "24px",
+                  fontWeight: 900,
+                }}
+              >
+                C
+              </div>
             </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "baseline",
-                gap: "2px",
-              }}
-            >
+            <div style={{ display: "flex", alignItems: "baseline" }}>
               <span
                 style={{
-                  fontSize: "32px",
+                  fontSize: "28px",
                   fontWeight: 700,
                   color: "#1c1917",
-                  letterSpacing: "-0.02em",
                 }}
               >
                 Claw
               </span>
               <span
                 style={{
-                  fontSize: "32px",
+                  fontSize: "28px",
                   fontWeight: 700,
                   color: "#d97706",
-                  letterSpacing: "-0.02em",
                 }}
               >
                 Dex
@@ -134,59 +95,56 @@ export async function GET(request: NextRequest) {
             </div>
           </div>
 
-          {/* Center: Title */}
+          {/* Title section */}
           <div
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: "20px",
-              maxWidth: "900px",
             }}
           >
-            <h1
+            <div
               style={{
-                fontSize: title.length > 50 ? "48px" : "56px",
+                fontSize: title.length > 50 ? "44px" : "52px",
                 fontWeight: 800,
                 color: "#1c1917",
-                lineHeight: 1.1,
-                letterSpacing: "-0.03em",
-                margin: 0,
+                lineHeight: 1.15,
+                marginBottom: "16px",
+                maxWidth: "900px",
               }}
             >
               {title}
-            </h1>
-            <p
+            </div>
+            <div
               style={{
-                fontSize: "24px",
+                fontSize: "22px",
                 color: "#78716c",
-                margin: 0,
                 lineHeight: 1.4,
+                maxWidth: "800px",
               }}
             >
               {subtitle}
-            </p>
+            </div>
 
             {/* Tags */}
             {(category || complexity) && (
               <div
                 style={{
                   display: "flex",
-                  gap: "12px",
-                  marginTop: "8px",
+                  marginTop: "24px",
                 }}
               >
                 {category && (
                   <div
                     style={{
-                      background: "rgba(217, 119, 6, 0.1)",
-                      border: "1px solid rgba(217, 119, 6, 0.2)",
-                      borderRadius: "9999px",
-                      padding: "8px 20px",
-                      fontSize: "16px",
+                      background: "#fef3c7",
+                      border: "2px solid #fcd34d",
+                      borderRadius: "20px",
+                      padding: "6px 16px",
+                      fontSize: "14px",
                       fontWeight: 600,
                       color: "#b45309",
                       textTransform: "uppercase",
-                      letterSpacing: "0.05em",
+                      marginRight: "12px",
                     }}
                   >
                     {category}
@@ -197,27 +155,27 @@ export async function GET(request: NextRequest) {
                     style={{
                       background:
                         complexity === "beginner"
-                          ? "rgba(16, 185, 129, 0.1)"
+                          ? "#d1fae5"
                           : complexity === "intermediate"
-                          ? "rgba(59, 130, 246, 0.1)"
-                          : "rgba(139, 92, 246, 0.1)",
-                      border: `1px solid ${
+                            ? "#dbeafe"
+                            : "#ede9fe",
+                      border: `2px solid ${
                         complexity === "beginner"
-                          ? "rgba(16, 185, 129, 0.2)"
+                          ? "#6ee7b7"
                           : complexity === "intermediate"
-                          ? "rgba(59, 130, 246, 0.2)"
-                          : "rgba(139, 92, 246, 0.2)"
+                            ? "#93c5fd"
+                            : "#c4b5fd"
                       }`,
-                      borderRadius: "9999px",
-                      padding: "8px 20px",
-                      fontSize: "16px",
+                      borderRadius: "20px",
+                      padding: "6px 16px",
+                      fontSize: "14px",
                       fontWeight: 600,
                       color:
                         complexity === "beginner"
                           ? "#059669"
                           : complexity === "intermediate"
-                          ? "#2563eb"
-                          : "#7c3aed",
+                            ? "#2563eb"
+                            : "#7c3aed",
                       textTransform: "capitalize",
                     }}
                   >
@@ -228,76 +186,60 @@ export async function GET(request: NextRequest) {
             )}
           </div>
 
-          {/* Bottom: Stats */}
+          {/* Footer */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "40px",
             }}
           >
-            <div
+            <span
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
+                fontSize: "24px",
+                fontWeight: 700,
+                color: "#d97706",
+                marginRight: "8px",
               }}
             >
-              <span
-                style={{
-                  fontSize: "28px",
-                  fontWeight: 700,
-                  color: "#d97706",
-                }}
-              >
-                90+
-              </span>
-              <span
-                style={{
-                  fontSize: "16px",
-                  color: "#a8a29e",
-                  fontWeight: 500,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                Use Cases
-              </span>
-            </div>
+              90+
+            </span>
+            <span
+              style={{
+                fontSize: "14px",
+                color: "#a8a29e",
+                fontWeight: 500,
+                textTransform: "uppercase",
+                marginRight: "32px",
+              }}
+            >
+              Use Cases
+            </span>
             <div
               style={{
                 width: "1px",
-                height: "24px",
-                background: "#e7e5e4",
+                height: "20px",
+                background: "#d6d3d1",
+                marginRight: "32px",
               }}
             />
-            <div
+            <span
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
+                fontSize: "14px",
+                color: "#a8a29e",
+                fontWeight: 500,
               }}
             >
-              <span
-                style={{
-                  fontSize: "16px",
-                  color: "#a8a29e",
-                  fontWeight: 500,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                clawdex.io
-              </span>
-            </div>
+              www.clawdex.io
+            </span>
           </div>
         </div>
 
-        {/* Accent bar at bottom */}
+        {/* Bottom gradient bar */}
         <div
           style={{
             height: "6px",
-            background: "linear-gradient(90deg, #f59e0b 0%, #d97706 50%, #ea580c 100%)",
+            width: "100%",
+            background: "linear-gradient(90deg, #f59e0b, #d97706, #ea580c)",
           }}
         />
       </div>
