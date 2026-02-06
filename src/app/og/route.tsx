@@ -3,6 +3,34 @@ import { NextRequest } from "next/server";
 
 export const runtime = "edge";
 
+// Fetch total use case count from Sanity
+async function getUseCaseCount(): Promise<number> {
+  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+  const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
+
+  if (!projectId) {
+    return 90; // Fallback if env not set
+  }
+
+  try {
+    const query = encodeURIComponent('count(*[_type == "useCase"])');
+    const url = `https://${projectId}.api.sanity.io/v2024-01-01/data/query/${dataset}?query=${query}`;
+
+    const response = await fetch(url, {
+      next: { revalidate: 3600 }, // Cache for 1 hour
+    });
+
+    if (!response.ok) {
+      return 90;
+    }
+
+    const data = await response.json();
+    return data.result || 90;
+  } catch {
+    return 90; // Fallback on error
+  }
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
@@ -12,6 +40,14 @@ export async function GET(request: NextRequest) {
     "The community directory for OpenClaw use cases";
   const category = searchParams.get("category");
   const complexity = searchParams.get("complexity");
+
+  // Get count from param or fetch from Sanity
+  const countParam = searchParams.get("count");
+  const count = countParam || `${await getUseCaseCount()}+`;
+
+  // Get the base URL for assets
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.clawdex.io";
 
   return new ImageResponse(
     (
@@ -51,28 +87,17 @@ export async function GET(request: NextRequest) {
               alignItems: "center",
             }}
           >
-            <div
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`${siteUrl}/icon-512.png`}
+              alt="ClawDex"
+              width={48}
+              height={48}
               style={{
-                width: "48px",
-                height: "48px",
                 borderRadius: "10px",
-                background: "linear-gradient(135deg, #f59e0b, #d97706)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
                 marginRight: "12px",
               }}
-            >
-              <div
-                style={{
-                  color: "white",
-                  fontSize: "24px",
-                  fontWeight: 900,
-                }}
-              >
-                C
-              </div>
-            </div>
+            />
             <div style={{ display: "flex", alignItems: "baseline" }}>
               <span
                 style={{
@@ -208,7 +233,7 @@ export async function GET(request: NextRequest) {
                   marginRight: "8px",
                 }}
               >
-                90+
+                {count}
               </span>
               <span
                 style={{
