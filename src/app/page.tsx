@@ -20,7 +20,8 @@ import { getAllUseCases, getCategories, getStats, getFAQs } from "@/lib/data/ada
 import { faqPageSchema } from "@/lib/schema";
 import { FAQ } from "@/components/layout/faq";
 import { SubscribeForm } from "@/components/newsletter/subscribe-form";
-import { PERSONAS, type Persona } from "@/lib/data/personas";
+import { PERSONAS } from "@clawdex/data/personas";
+import type { PersonaDef as Persona } from "@clawdex/data/types";
 import type { UseCaseCard, CategoryView, StatsView } from "@/types";
 import type { LucideIcon } from "lucide-react";
 

@@ -35,7 +35,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { UseCaseCardComponent } from "@/components/use-case/card";
 import { cn } from "@/lib/utils";
-import { PERSONAS } from "@/lib/data/personas";
+import { PERSONAS } from "@clawdex/data/personas";
 import type { Complexity, UseCaseCard, CategoryView, PersonaTag, UseCaseType } from "@/types";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
