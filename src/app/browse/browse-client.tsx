@@ -583,7 +583,7 @@ function BrowseInner({
   const availableIntegrations = useMemo(() => {
     const integrationSet = new Set<string>();
     useCases.forEach((uc) => {
-      uc.integrations.forEach((int) => integrationSet.add(int.name));
+      uc.integrations?.forEach((int) => int && integrationSet.add(int.name));
     });
     return Array.from(integrationSet).sort();
   }, [useCases]);
@@ -711,7 +711,8 @@ function BrowseInner({
   // ─── Filtered & Sorted Data ───────────────────────────────
 
   const filteredUseCases = useMemo(() => {
-    let results = [...useCases];
+    // Filter out use cases with broken Sanity references (null category, etc.)
+    let results = useCases.filter((uc) => uc.category != null);
 
     // Search with Fuse.js
     if (searchQuery) {
@@ -746,7 +747,7 @@ function BrowseInner({
     // Integration filter
     if (selectedIntegrations.length > 0) {
       results = results.filter((uc) =>
-        uc.integrations.some((int) => selectedIntegrations.includes(int.name))
+        uc.integrations?.some((int) => int && selectedIntegrations.includes(int.name))
       );
     }
 

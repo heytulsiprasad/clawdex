@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Zap } from "lucide-react";
 import { SubscribeForm } from "@/components/newsletter/subscribe-form";
+import { client } from "@/lib/sanity/client";
 
 const FOOTER_LINKS = {
   Directory: [
@@ -20,6 +22,15 @@ const FOOTER_LINKS = {
 };
 
 export function Footer() {
+  const [useCaseCount, setUseCaseCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    client
+      .fetch<number>(`count(*[_type == "useCase"])`)
+      .then(setUseCaseCount)
+      .catch(() => {});
+  }, []);
+
   return (
     <footer className="relative border-t border-stone-200">
       {/* Top gradient line */}
@@ -79,7 +90,7 @@ export function Footer() {
             <div className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5">
               <Zap className="size-3 text-amber-600" />
               <span className="text-[12px] text-muted-foreground">
-                <span className="font-semibold text-foreground/80">90+</span>{" "}
+                <span className="font-semibold text-foreground/80">{useCaseCount ?? "…"}</span>{" "}
                 use cases cataloged
               </span>
             </div>

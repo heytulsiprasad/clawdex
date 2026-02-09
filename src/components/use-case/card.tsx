@@ -46,6 +46,8 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export function UseCaseCardComponent({ useCase }: { useCase: UseCaseCard }) {
+  if (!useCase.category) return null;
+
   const complexity = COMPLEXITY_CONFIG[useCase.complexity];
   const categoryColor = CATEGORY_COLORS[useCase.category.color] || CATEGORY_COLORS.amber;
   const PlatformIcon = PLATFORM_ICONS[useCase.sourcePlatform] || PLATFORM_ICONS.other;
@@ -92,7 +94,7 @@ export function UseCaseCardComponent({ useCase }: { useCase: UseCaseCard }) {
         {/* Integrations */}
         {useCase.integrations?.length > 0 && (
           <div className="mb-4 flex flex-wrap gap-1.5">
-            {useCase.integrations.map((integration) => (
+            {useCase.integrations.filter(Boolean).map((integration) => (
               <span
                 key={integration.slug}
                 className="rounded-md bg-stone-50 border border-stone-200/60 px-2 py-0.5 text-[11px] font-medium text-muted-foreground"

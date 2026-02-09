@@ -263,11 +263,11 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
   const videoMedia = (useCase.media ?? []).filter(
     (m) => m._type === "mediaEmbed" && m.mediaType === "video" && m.url
   );
-  const hasMedia = imageMedia.length > 0 || videoMedia.length > 0;
-  const isTwitterVideo =
-    useCase.sourcePlatform === "twitter" &&
-    videoMedia.length > 0 &&
-    !!useCase.sourceUrl;
+  const isTwitterSource =
+    useCase.sourcePlatform === "twitter" && !!useCase.sourceUrl;
+  const hasMedia =
+    imageMedia.length > 0 ||
+    (!isTwitterSource && videoMedia.length > 0);
 
   const PlatformIcon =
     PLATFORM_ICONS[useCase.sourcePlatform] || PLATFORM_ICONS.other;
@@ -481,22 +481,11 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                     Media
                   </h2>
                   <div className="space-y-4">
-                    {/* Twitter video: render inline tweet embed */}
-                    {isTwitterVideo && (
-                      <TwitterVideoEmbed
-                        sourceUrl={useCase.sourceUrl}
-                        platformLabel={PLATFORM_LABELS[useCase.sourcePlatform]}
-                      />
-                    )}
-
                     {/* Images */}
                     {imageMedia.map((media, idx) => {
-                      // Skip first image when tweet embed is shown (it renders its own media)
-                      if (isTwitterVideo && idx === 0) return null;
-
                       // Non-Twitter video: first image gets play overlay linking to source
                       const isNonTwitterVideoThumbnail =
-                        !isTwitterVideo && videoMedia.length > 0 && idx === 0;
+                        !isTwitterSource && videoMedia.length > 0 && idx === 0;
 
                       if (isNonTwitterVideoThumbnail) {
                         return (
@@ -570,7 +559,7 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                     })}
 
                     {/* Non-Twitter video-only fallback: external link card */}
-                    {!isTwitterVideo &&
+                    {!isTwitterSource &&
                       videoMedia.length > 0 &&
                       imageMedia.length === 0 && (
                         <a
@@ -600,36 +589,48 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
               )}
 
               {/* Source Link */}
-              <div className="bg-amber-50 border border-amber-200 rounded-lg shadow-sm p-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-white rounded-lg border border-amber-200">
-                    <PlatformIcon className="w-6 h-6 text-amber-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-stone-900 mb-1">
-                      View Original Post
-                    </h3>
-                    <p className="text-sm text-stone-600 mb-4">
-                      See the original discussion and community feedback on{" "}
-                      {PLATFORM_LABELS[useCase.sourcePlatform]}.
-                    </p>
-                    <Button
-                      asChild
-                      className="bg-amber-600 hover:bg-amber-700 text-white"
-                    >
-                      <a
-                        href={useCase.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2"
+              {isTwitterSource ? (
+                <div className="bg-white border border-stone-200 rounded-lg shadow-sm p-6 md:p-8">
+                  <h2 className="text-2xl font-semibold text-stone-900 mb-4">
+                    Original Tweet
+                  </h2>
+                  <TwitterVideoEmbed
+                    sourceUrl={useCase.sourceUrl}
+                    platformLabel={PLATFORM_LABELS[useCase.sourcePlatform]}
+                  />
+                </div>
+              ) : (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg shadow-sm p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-white rounded-lg border border-amber-200">
+                      <PlatformIcon className="w-6 h-6 text-amber-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-stone-900 mb-1">
+                        View Original Post
+                      </h3>
+                      <p className="text-sm text-stone-600 mb-4">
+                        See the original discussion and community feedback on{" "}
+                        {PLATFORM_LABELS[useCase.sourcePlatform]}.
+                      </p>
+                      <Button
+                        asChild
+                        className="bg-amber-600 hover:bg-amber-700 text-white"
                       >
-                        View on {PLATFORM_LABELS[useCase.sourcePlatform]}
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </Button>
+                        <a
+                          href={useCase.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2"
+                        >
+                          View on {PLATFORM_LABELS[useCase.sourcePlatform]}
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Right Column - Sidebar */}
