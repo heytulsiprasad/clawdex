@@ -143,7 +143,7 @@ export default function BookmarksPage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {useCases.map((useCase) => (
-                  <UseCaseCardComponent key={useCase._id} useCase={useCase} />
+                  <UseCaseCardComponent key={useCase.id} useCase={useCase} />
                 ))}
               </div>
             </>

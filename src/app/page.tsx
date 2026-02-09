@@ -16,13 +16,7 @@ import { Footer } from "@/components/layout/footer";
 import { Hero } from "@/components/layout/hero";
 import { UseCaseCardComponent } from "@/components/use-case/card";
 import { CategoryCard } from "@/components/layout/category-card";
-import { client } from "@/lib/sanity/client";
-import {
-  USE_CASES_QUERY,
-  CATEGORIES_QUERY,
-  STATS_QUERY,
-  FAQ_QUERY,
-} from "@/lib/sanity/queries";
+import { getAllUseCases, getCategories, getStats, getFAQs } from "@/lib/data/adapter";
 import { faqPageSchema } from "@/lib/schema";
 import { FAQ } from "@/components/layout/faq";
 import { SubscribeForm } from "@/components/newsletter/subscribe-form";
@@ -96,12 +90,10 @@ function SectionHeader({
 }
 
 export default async function HomePage() {
-  const [useCases, categories, stats, faqs] = await Promise.all([
-    client.fetch<UseCaseCard[]>(USE_CASES_QUERY),
-    client.fetch<CategoryView[]>(CATEGORIES_QUERY),
-    client.fetch<StatsView>(STATS_QUERY),
-    client.fetch<{ question: string; answer: string }[]>(FAQ_QUERY),
-  ]);
+  const useCases = getAllUseCases();
+  const categories = getCategories();
+  const stats = getStats();
+  const faqs = getFAQs();
 
   // Show top 6 use cases by upvotes for the featured section
   const featured = [...useCases]
@@ -136,7 +128,7 @@ export default async function HomePage() {
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {featured.map((useCase) => (
-                <UseCaseCardComponent key={useCase._id} useCase={useCase} />
+                <UseCaseCardComponent key={useCase.id} useCase={useCase} />
               ))}
             </div>
 
@@ -172,7 +164,7 @@ export default async function HomePage() {
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {categories.map((category) => (
-                <CategoryCard key={category._id} category={category} />
+                <CategoryCard key={category.id} category={category} />
               ))}
             </div>
           </div>

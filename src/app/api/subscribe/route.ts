@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { writeClient, client } from "@/lib/sanity/client";
+import { db } from "@/lib/firebase/config";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 interface SubscribeBody {
   email: string;
@@ -18,22 +19,18 @@ export async function POST(request: Request) {
     }
 
     const source = body.source || "hero";
+    const emailKey = body.email.toLowerCase().replace(/[.#$/[\]]/g, "_");
+    const ref = doc(db, "subscribers", emailKey);
+    const existing = await getDoc(ref);
 
-    // Check for duplicate
-    const existing = await client.fetch<number>(
-      `count(*[_type == "subscriber" && email == $email])`,
-      { email: body.email }
-    );
-
-    if (existing > 0) {
+    if (existing.exists()) {
       return NextResponse.json(
         { success: true, message: "Already subscribed" },
         { status: 200 }
       );
     }
 
-    await writeClient.create({
-      _type: "subscriber" as const,
+    await setDoc(ref, {
       email: body.email,
       source,
       subscribedAt: new Date().toISOString(),

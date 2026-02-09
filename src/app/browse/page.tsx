@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { client } from "@/lib/sanity/client";
-import { USE_CASES_QUERY, CATEGORIES_QUERY } from "@/lib/sanity/queries";
+import { getAllUseCases, getCategories } from "@/lib/data/adapter";
 import { collectionPageSchema } from "@/lib/schema";
 import type { UseCaseCard, CategoryView } from "@/types";
 import { BrowseClient } from "./browse-client";
@@ -35,11 +34,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function BrowsePage() {
-  const [useCases, categories] = await Promise.all([
-    client.fetch<UseCaseCard[]>(USE_CASES_QUERY),
-    client.fetch<CategoryView[]>(CATEGORIES_QUERY),
-  ]);
+export default function BrowsePage() {
+  const useCases = getAllUseCases();
+  const categories = getCategories();
 
   return (
     <>

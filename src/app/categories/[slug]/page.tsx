@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Zap, Code, Home, Target, Users, Phone, Network, Cpu, BookOpen, Palette, type LucideIcon } from "lucide-react";
-import { client } from "@/lib/sanity/client";
 import {
-  CATEGORY_BY_SLUG_QUERY,
-  USE_CASES_BY_CATEGORY_QUERY,
-  ALL_CATEGORY_SLUGS_QUERY,
-} from "@/lib/sanity/queries";
+  getCategoryBySlug,
+  getUseCasesByCategory,
+  getAllCategorySlugs,
+} from "@/lib/data/adapter";
 import { breadcrumbSchema } from "@/lib/schema";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
@@ -60,7 +59,7 @@ interface CategoryPageProps {
 }
 
 interface CategoryDetail {
-  _id: string;
+  id: string;
   name: string;
   slug: string;
   description: string;
@@ -72,10 +71,7 @@ export async function generateMetadata({
   params,
 }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const category = await client.fetch<CategoryDetail>(
-    CATEGORY_BY_SLUG_QUERY,
-    { slug }
-  );
+  const category = getCategoryBySlug(slug) as CategoryDetail | undefined;
 
   if (!category) {
     return {
@@ -94,28 +90,19 @@ export async function generateMetadata({
   };
 }
 
-export async function generateStaticParams() {
-  const slugs = await client.fetch<{ slug: string }[]>(
-    ALL_CATEGORY_SLUGS_QUERY
-  );
-  return slugs.map((s) => ({ slug: s.slug }));
+export function generateStaticParams() {
+  return getAllCategorySlugs().map((slug) => ({ slug }));
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
-  const category = await client.fetch<CategoryDetail>(
-    CATEGORY_BY_SLUG_QUERY,
-    { slug }
-  );
+  const category = getCategoryBySlug(slug) as CategoryDetail | undefined;
 
   if (!category) {
     notFound();
   }
 
-  const useCases = await client.fetch<UseCaseCard[]>(
-    USE_CASES_BY_CATEGORY_QUERY,
-    { categorySlug: slug }
-  );
+  const useCases = getUseCasesByCategory(slug);
 
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.clawdex.io";
   const breadcrumbJsonLd = breadcrumbSchema([
@@ -211,7 +198,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           {useCases.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {useCases.map((useCase) => (
-                <UseCaseCardComponent key={useCase._id} useCase={useCase} />
+                <UseCaseCardComponent key={useCase.id} useCase={useCase} />
               ))}
             </div>
           ) : (

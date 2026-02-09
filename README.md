@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ClawDex
+
+The community-driven, open-source directory of [OpenClaw](https://github.com/openclaw) use cases. Browse real AI agent workflows, copy prompts to your agent in one click, and discover what's possible.
+
+![ClawDex Homepage](public/screenshots/homepage.png)
+
+## What is this?
+
+ClawDex is like [cursor.directory](https://cursor.directory) but for OpenClaw. It's a browsable directory of real-world AI agent use cases — from flight check-in automation to smart home voice control — all contributed by the community via GitHub PRs.
+
+Every use case includes a **copyable agent prompt** you can paste directly into your OpenClaw agent via WhatsApp, Telegram, Discord, or any chat channel.
+
+## Features
+
+- **20+ curated use cases** across 10 categories (automation, dev workflows, smart home, productivity, and more)
+- **One-click copy** — every use case has a prompt you can paste to your agent
+- **AI prompt generator** — describe a use case and AI auto-generates a structured prompt
+- **Community-driven** — add use cases by submitting a PR with a TypeScript file
+- **Browse & filter** by category, complexity, integrations, and persona
+- **Upvote & bookmark** your favorites
+
+## Contributing
+
+Adding a use case is simple:
+
+1. Fork this repository
+2. Copy `packages/data/src/use-cases/_template.ts` to a new file
+3. Fill in your use case details (especially the `prompt` field)
+4. Add your export to `packages/data/src/use-cases/index.ts`
+5. Submit a Pull Request
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
+
+## Tech Stack
+
+- **Next.js 16** with React 19 and Turbopack
+- **GitHub-backed data** — use cases live as TypeScript files in `packages/data/`
+- **Firebase Firestore** — upvotes, bookmarks, subscribers
+- **Anthropic API** — AI prompt generation on the submit page
+- **Vercel** — deployment with edge runtime for OG images
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Install dependencies
+pnpm install
+
+# Copy env file and add your keys
+cp .env.local.example .env.local
+
+# Run development server
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+clawdex/
+  packages/data/          # Open-source data package (use cases, categories, etc.)
+    src/use-cases/        # Community-contributed use case files
+    src/categories.ts     # Category definitions
+    src/integrations.ts   # Integration catalog
+    src/types.ts          # Shared TypeScript types
+  src/                    # Next.js app
+    app/                  # Pages and API routes
+    components/           # React components
+    lib/data/adapter.ts   # Data access layer
+  CONTRIBUTING.md         # How to add a use case
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## License
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

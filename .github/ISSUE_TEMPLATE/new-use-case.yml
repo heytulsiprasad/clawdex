@@ -1,0 +1,70 @@
+name: New Use Case
+description: Suggest a use case for ClawDex
+title: "[Use Case] "
+labels: ["use-case", "community"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a use case! Fill in what you can — we'll handle the rest.
+  - type: input
+    id: title
+    attributes:
+      label: Use Case Title
+      placeholder: "e.g., Flight Check-in Automation"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      placeholder: "What does this use case do? How does it help?"
+    validations:
+      required: true
+  - type: textarea
+    id: prompt
+    attributes:
+      label: Agent Prompt
+      description: "The prompt a user would paste to their OpenClaw agent. Be specific!"
+      placeholder: |
+        Find my next upcoming flight by searching my email...
+        When the check-in window opens...
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Automation & Workflows
+        - Development & DevOps
+        - Smart Home & IoT
+        - Productivity
+        - Family & Personal
+        - Voice & Communication
+        - Multi-Agent Setups
+        - Hardware & Edge
+        - Learning & Research
+        - Creative & Media
+    validations:
+      required: true
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Complexity
+      options:
+        - Beginner
+        - Intermediate
+        - Advanced
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source URL
+      description: "Link to the original tweet, post, or repo where you found this"
+      placeholder: "https://twitter.com/..."
+  - type: textarea
+    id: integrations
+    attributes:
+      label: Integrations Used
+      description: "What tools/services does this connect to?"
+      placeholder: "Gmail, WhatsApp, Home Assistant, etc."

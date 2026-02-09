@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { writeClient } from "@/lib/sanity/client";
+import { db } from "@/lib/firebase/config";
+import { collection, addDoc } from "firebase/firestore";
 import type { SourcePlatform } from "@/types";
 
 interface SubmitBody {
@@ -39,20 +40,19 @@ export async function POST(request: Request) {
 
     const platform = body.sourcePlatform || detectPlatform(body.sourceUrl);
 
-    const doc = {
-      _type: "submission" as const,
+    const docData = {
       sourceUrl: body.sourceUrl,
       sourcePlatform: platform,
-      submitterEmail: body.submitterEmail || undefined,
-      rawExtractedData: body.notes ? { text: body.notes } : undefined,
-      status: "pending" as const,
+      submitterEmail: body.submitterEmail || null,
+      notes: body.notes || null,
+      status: "pending",
       submittedAt: new Date().toISOString(),
     };
 
-    const result = await writeClient.create(doc);
+    const docRef = await addDoc(collection(db, "submissions"), docData);
 
     return NextResponse.json(
-      { success: true, id: result._id },
+      { success: true, id: docRef.id },
       { status: 201 }
     );
   } catch (err) {

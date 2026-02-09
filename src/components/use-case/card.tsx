@@ -26,11 +26,11 @@ const PLATFORM_ICONS: Record<string, React.ElementType> = {
   other: Globe,
 };
 
-const COMPLEXITY_CONFIG = {
+const COMPLEXITY_CONFIG: Record<string, { label: string; className: string }> = {
   beginner: { label: "Beginner", className: "text-emerald-700 border-emerald-200 bg-emerald-50" },
   intermediate: { label: "Intermediate", className: "text-blue-700 border-blue-200 bg-blue-50" },
   advanced: { label: "Advanced", className: "text-purple-700 border-purple-200 bg-purple-50" },
-} as const;
+};
 
 const CATEGORY_COLORS: Record<string, string> = {
   amber: "text-amber-700 bg-amber-50 border-amber-200",
@@ -50,7 +50,7 @@ export function UseCaseCardComponent({ useCase }: { useCase: UseCaseCard }) {
 
   const complexity = COMPLEXITY_CONFIG[useCase.complexity];
   const categoryColor = CATEGORY_COLORS[useCase.category.color] || CATEGORY_COLORS.amber;
-  const PlatformIcon = PLATFORM_ICONS[useCase.sourcePlatform] || PLATFORM_ICONS.other;
+  const PlatformIcon = PLATFORM_ICONS[useCase.sourcePlatform || "other"] || PLATFORM_ICONS.other;
 
   return (
     <Link
@@ -122,8 +122,8 @@ export function UseCaseCardComponent({ useCase }: { useCase: UseCaseCard }) {
             <PlatformIcon className="size-3 text-muted-foreground/50" />
           </div>
           <div className="flex items-center gap-1.5">
-            <BookmarkButton useCaseId={useCase._id} useCaseTitle={useCase.title} variant="card" />
-            <UpvoteButton id={useCase._id} initialCount={useCase.upvotes} variant="card" />
+            <BookmarkButton useCaseId={useCase.id} useCaseTitle={useCase.title} variant="card" />
+            <UpvoteButton id={useCase.id} initialCount={useCase.upvotes} variant="card" />
           </div>
         </div>
       </div>

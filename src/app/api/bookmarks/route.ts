@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { client } from "@/lib/sanity/client";
+import { getUseCasesByIds } from "@/lib/data/adapter";
 
 export async function POST(request: Request) {
   try {
@@ -9,24 +9,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ results: [] });
     }
 
-    const results = await client.fetch(
-      `*[_type == "useCase" && _id in $ids] {
-        _id,
-        title,
-        "slug": slug.current,
-        description,
-        category->{ name, "slug": slug.current, icon, color },
-        complexity,
-        type,
-        personas,
-        sourcePlatform,
-        integrations[]->{ name, "slug": slug.current },
-        creator,
-        upvotes
-      } | order(_createdAt desc)`,
-      { ids }
-    );
-
+    const results = getUseCasesByIds(ids);
     return NextResponse.json({ results });
   } catch (error) {
     console.error("Error fetching bookmarks:", error);

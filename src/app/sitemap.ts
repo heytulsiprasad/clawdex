@@ -1,24 +1,11 @@
 import { MetadataRoute } from "next";
-import { client } from "@/lib/sanity/client";
+import { getAllUseCaseSlugs, getAllCategorySlugs } from "@/lib/data/adapter";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.clawdex.io";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Fetch all use case slugs with their last modified dates
-  const useCases = await client.fetch<
-    { slug: string; _updatedAt: string }[]
-  >(`*[_type == "useCase" && defined(slug.current)] {
-    "slug": slug.current,
-    _updatedAt
-  }`);
-
-  // Fetch all category slugs
-  const categories = await client.fetch<
-    { slug: string; _updatedAt: string }[]
-  >(`*[_type == "category" && defined(slug.current)] {
-    "slug": slug.current,
-    _updatedAt
-  }`);
+export default function sitemap(): MetadataRoute.Sitemap {
+  const useCaseSlugs = getAllUseCaseSlugs();
+  const categorySlugs = getAllCategorySlugs();
 
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
@@ -55,17 +42,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Use case pages
-  const useCasePages: MetadataRoute.Sitemap = useCases.map((useCase) => ({
-    url: `${baseUrl}/use-case/${useCase.slug}`,
-    lastModified: new Date(useCase._updatedAt),
+  const useCasePages: MetadataRoute.Sitemap = useCaseSlugs.map((slug) => ({
+    url: `${baseUrl}/use-case/${slug}`,
+    lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.7,
   }));
 
   // Category pages
-  const categoryPages: MetadataRoute.Sitemap = categories.map((category) => ({
-    url: `${baseUrl}/categories/${category.slug}`,
-    lastModified: new Date(category._updatedAt),
+  const categoryPages: MetadataRoute.Sitemap = categorySlugs.map((slug) => ({
+    url: `${baseUrl}/categories/${slug}`,
+    lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.6,
   }));

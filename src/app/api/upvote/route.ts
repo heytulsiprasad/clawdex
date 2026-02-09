@@ -1,39 +1,33 @@
 import { NextResponse } from "next/server";
-import { writeClient } from "@/lib/sanity/client";
+import { db } from "@/lib/firebase/config";
+import { doc, getDoc, setDoc, increment } from "firebase/firestore";
 
-// ─── In-memory rate limiter ─────────────────────────────────────────────────
-// Resets on cold start — acceptable soft limit for serverless.
-const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+const WINDOW_MS = 15 * 60 * 1000;
 const MAX_VOTES = 20;
-
 const hits = new Map<string, { count: number; resetAt: number }>();
 
 function isRateLimited(fingerprint: string): boolean {
   const now = Date.now();
   const entry = hits.get(fingerprint);
-
   if (!entry || now > entry.resetAt) {
     hits.set(fingerprint, { count: 1, resetAt: now + WINDOW_MS });
     return false;
   }
-
   entry.count += 1;
   return entry.count > MAX_VOTES;
 }
 
-// ─── POST /api/upvote ───────────────────────────────────────────────────────
 export async function POST(request: Request) {
   try {
     const { id } = (await request.json()) as { id?: string };
 
     if (!id || typeof id !== "string") {
       return NextResponse.json(
-        { error: "Missing or invalid document id" },
+        { error: "Missing or invalid use case id" },
         { status: 400 }
       );
     }
 
-    // Rate limit by IP
     const forwarded = request.headers.get("x-forwarded-for");
     const ip = forwarded?.split(",")[0]?.trim() || "unknown";
 
@@ -44,14 +38,20 @@ export async function POST(request: Request) {
       );
     }
 
-    // Atomic increment in Sanity
-    const result = await writeClient
-      .patch(id)
-      .inc({ upvotes: 1 })
-      .commit();
+    const ref = doc(db, "upvotes", id);
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+      await setDoc(ref, { count: increment(1) }, { merge: true });
+    } else {
+      await setDoc(ref, { count: 1 });
+    }
+
+    const updated = await getDoc(ref);
+    const upvotes = updated.data()?.count ?? 0;
 
     return NextResponse.json(
-      { success: true, upvotes: result.upvotes as number },
+      { success: true, upvotes },
       { status: 200 }
     );
   } catch (err) {

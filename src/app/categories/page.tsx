@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronRight, Zap, Code, Home, Target, Users, Phone, Network, Cpu, BookOpen, Palette, type LucideIcon } from "lucide-react";
-import { client } from "@/lib/sanity/client";
-import { CATEGORIES_QUERY } from "@/lib/sanity/queries";
+import { getCategories } from "@/lib/data/adapter";
 import type { CategoryView } from "@/types";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
@@ -61,8 +60,8 @@ const COLOR_MAP: Record<string, { icon: string; bg: string; border: string; hove
   rose: { icon: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200/60", hoverBg: "group-hover:bg-rose-100/80" },
 };
 
-export default async function CategoriesPage() {
-  const categories = await client.fetch<CategoryView[]>(CATEGORIES_QUERY);
+export default function CategoriesPage() {
+  const categories = getCategories();
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -104,7 +103,7 @@ export default async function CategoriesPage() {
 
                 return (
                   <Link
-                    key={category._id}
+                    key={category.id}
                     href={`/categories/${category.slug}`}
                     className="group block"
                   >

@@ -76,7 +76,7 @@ const QUICK_PICKS = [
 ] as const;
 
 // Complexity config matching the use case page
-const COMPLEXITY_CONFIG = {
+const COMPLEXITY_CONFIG: Record<string, { label: string; className: string }> = {
   beginner: {
     label: "Beginner",
     className: "text-emerald-700 border-emerald-200 bg-emerald-50",
@@ -89,7 +89,7 @@ const COMPLEXITY_CONFIG = {
     label: "Advanced",
     className: "text-purple-700 border-purple-200 bg-purple-50",
   },
-} as const;
+};
 
 const CATEGORY_COLORS: Record<string, string> = {
   amber: "text-amber-700 bg-amber-50 border-amber-200",
@@ -358,7 +358,7 @@ export function WorkflowWizard({ isOpen, onClose }: WorkflowWizardProps) {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {state.results.map((useCase) => (
                         <Link
-                          key={useCase._id}
+                          key={useCase.id}
                           href={`/use-case/${useCase.slug}`}
                           onClick={onClose}
                           className="block group"
@@ -393,7 +393,7 @@ export function WorkflowWizard({ isOpen, onClose }: WorkflowWizardProps) {
                                 {useCase.category.name}
                               </Badge>
                               <div className="flex items-center gap-1.5">
-                                <BookmarkButton useCaseId={useCase._id} useCaseTitle={useCase.title} variant="card" />
+                                <BookmarkButton useCaseId={useCase.id} useCaseTitle={useCase.title} variant="card" />
                                 <div className="flex items-center gap-1 text-stone-500">
                                   <ChevronUp className="w-3.5 h-3.5" />
                                   <span className="text-xs font-medium">{useCase.upvotes}</span>

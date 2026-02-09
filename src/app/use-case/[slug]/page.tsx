@@ -20,25 +20,29 @@ import {
 } from "lucide-react";
 
 import { TwitterVideoEmbed } from "@/components/media/twitter-video-embed";
-import { client } from "@/lib/sanity/client";
 import {
-  USE_CASE_BY_SLUG_QUERY,
-  RELATED_USE_CASES_QUERY,
-} from "@/lib/sanity/queries";
-import { urlFor } from "@/lib/sanity/image";
+  getUseCaseBySlug,
+  getRelatedUseCases,
+} from "@/lib/data/adapter";
 import { articleSchema, breadcrumbSchema } from "@/lib/schema";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { UseCaseCardComponent } from "@/components/use-case/card";
 import { UpvoteButton } from "@/components/use-case/upvote-button";
 import { BookmarkButton } from "@/components/use-case/bookmark-button";
+import { CopyPrompt } from "@/components/use-case/copy-prompt";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import type { UseCaseCard } from "@/types";
+import { CATEGORIES } from "@clawdex/data/categories";
+import { INTEGRATIONS } from "@clawdex/data/integrations";
+import { PERSONAS } from "@clawdex/data/personas";
 
-const COMPLEXITY_CONFIG = {
+const COMPLEXITY_CONFIG: Record<
+  string,
+  { label: string; className: string }
+> = {
   beginner: {
     label: "Beginner",
     className: "text-emerald-700 border-emerald-200 bg-emerald-50",
@@ -80,13 +84,13 @@ const COMPLEXITY_EFFORT: Record<string, string> = {
   advanced: "A few hours",
 };
 
-const PERSONA_ID_MAP: Record<string, string> = {
-  Developer: "developer",
-  "Solo Founder": "solo-founder",
-  "Family Manager": "family-manager",
-  "Productivity Enthusiast": "productivity-enthusiast",
-  "Smart Home Enthusiast": "smart-home-enthusiast",
-  "Content Creator": "content-creator",
+const PERSONA_LABELS: Record<string, string> = {
+  developer: "Developer",
+  "solo-founder": "Solo Founder",
+  "family-manager": "Family Manager",
+  "productivity-enthusiast": "Productivity Enthusiast",
+  "smart-home-enthusiast": "Smart Home Enthusiast",
+  "content-creator": "Content Creator",
 };
 
 const CHANNEL_LABELS: Record<string, string> = {
@@ -111,6 +115,7 @@ const PLATFORM_ICONS: Record<string, React.ElementType> = {
   youtube: Youtube,
   github: Github,
   devto: DevToIcon,
+  hackernews: Globe,
   other: Globe,
 };
 
@@ -120,6 +125,7 @@ const PLATFORM_LABELS: Record<string, string> = {
   youtube: "YouTube",
   github: "GitHub",
   devto: "DEV Community",
+  hackernews: "Hacker News",
   other: "Web",
 };
 
@@ -129,56 +135,30 @@ interface UseCasePageProps {
   }>;
 }
 
-interface UseCaseDetail {
-  _id: string;
-  _createdAt: string;
-  title: string;
-  slug: string;
-  description: string;
-  longDescription: Array<{
-    _type: "block";
-    children: Array<{ text: string }>;
-  }>;
-  category: {
-    _id: string;
-    name: string;
-    slug: string;
-    icon: string;
-    color: string;
-    description: string;
-  };
-  complexity: "beginner" | "intermediate" | "advanced";
-  type: "workflow" | "skill" | "cron-job" | "multi-agent" | "hardware";
-  channels: string[];
-  integrations: Array<{ _id: string; name: string; slug: string }>;
-  personas: string[];
-  creator: { handle: string; name: string; avatar?: string };
-  sourceUrl: string;
-  sourcePlatform: "twitter" | "reddit" | "youtube" | "github" | "other";
-  media: Array<{
-    _type: "image" | "mediaEmbed";
-    _key: string;
-    asset?: { _ref: string };
-    url?: string;
-    mediaType?: string;
-    caption?: string;
-  }>;
-  setupSteps?: Array<{
-    _type: "block";
-    children: Array<{ text: string }>;
-  }>;
-  upvotes: number;
-  featured: boolean;
-  discoverySource: string;
+function getCategoryInfo(slug: string) {
+  const cat = CATEGORIES.find((c: { slug: string }) => c.slug === slug);
+  return cat
+    ? { name: cat.name, slug: cat.slug, icon: cat.icon, color: cat.color }
+    : { name: "Unknown", slug, icon: "zap", color: "amber" };
+}
+
+function getIntegrationNames(slugs: string[]) {
+  return slugs.map((s: string) => {
+    const integration = INTEGRATIONS.find((i: { slug: string }) => i.slug === s);
+    return { name: integration?.name || s, slug: s };
+  });
+}
+
+function getPersonaLabel(tag: string) {
+  const persona = PERSONAS.find((p) => p.id === tag);
+  return persona?.label || PERSONA_LABELS[tag] || tag;
 }
 
 export async function generateMetadata({
   params,
 }: UseCasePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const useCase = await client.fetch<UseCaseDetail>(USE_CASE_BY_SLUG_QUERY, {
-    slug,
-  });
+  const useCase = getUseCaseBySlug(slug);
 
   if (!useCase) {
     return {
@@ -186,22 +166,23 @@ export async function generateMetadata({
     };
   }
 
+  const category = getCategoryInfo(useCase.category);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.clawdex.io";
   const ogImageUrl = new URL(`${siteUrl}/og`);
   ogImageUrl.searchParams.set("title", useCase.title);
   ogImageUrl.searchParams.set("subtitle", useCase.description.slice(0, 100));
-  ogImageUrl.searchParams.set("category", useCase.category.name);
+  ogImageUrl.searchParams.set("category", category.name);
   ogImageUrl.searchParams.set("complexity", useCase.complexity);
 
   return {
     title: useCase.title,
     description: useCase.description,
     keywords: [
-      useCase.category.name,
+      category.name,
       useCase.complexity,
       "OpenClaw",
       "AI workflow",
-      ...(useCase.integrations?.map((i) => i.name) || []),
+      ...getIntegrationNames(useCase.integrations).map((i) => i.name),
     ],
     openGraph: {
       title: useCase.title,
@@ -231,75 +212,42 @@ export async function generateMetadata({
 
 export default async function UseCasePage({ params }: UseCasePageProps) {
   const { slug } = await params;
-  const useCase = await client.fetch<UseCaseDetail>(USE_CASE_BY_SLUG_QUERY, {
-    slug,
-  });
+  const useCase = getUseCaseBySlug(slug);
 
   if (!useCase) {
     notFound();
   }
 
-  const relatedUseCases = await client.fetch<UseCaseCard[]>(
-    RELATED_USE_CASES_QUERY,
-    {
-      categoryId: useCase.category._id,
-      currentSlug: useCase.slug,
-    }
-  );
+  const category = getCategoryInfo(useCase.category);
+  const integrations = getIntegrationNames(useCase.integrations);
+  const relatedUseCases = getRelatedUseCases(useCase.category, useCase.slug);
 
-  const longDescriptionText =
-    useCase.longDescription
-      ?.map((block) => block.children?.map((child) => child.text).join(""))
-      .join("\n\n") || useCase.description;
+  const longDescriptionText = useCase.longDescription || useCase.description;
 
-  const setupStepsText = useCase.setupSteps
-    ?.map((block) => block.children?.map((child) => child.text).join(""))
-    .filter((text) => text.trim().length > 0)
-    .join("\n\n");
-
-  const imageMedia = (useCase.media ?? []).filter(
-    (m) => m._type === "image" && m.asset
-  );
-  const videoMedia = (useCase.media ?? []).filter(
-    (m) => m._type === "mediaEmbed" && m.mediaType === "video" && m.url
-  );
   const isTwitterSource =
     useCase.sourcePlatform === "twitter" && !!useCase.sourceUrl;
-  const hasMedia =
-    imageMedia.length > 0 ||
-    (!isTwitterSource && videoMedia.length > 0);
 
   const PlatformIcon =
-    PLATFORM_ICONS[useCase.sourcePlatform] || PLATFORM_ICONS.other;
+    PLATFORM_ICONS[useCase.sourcePlatform || "other"] || PLATFORM_ICONS.other;
 
   const SITE_URL =
     process.env.NEXT_PUBLIC_SITE_URL || "https://www.clawdex.io";
-
-  const firstImageUrl = imageMedia[0]?.asset
-    ? urlFor({
-        _type: "image",
-        asset: { _ref: imageMedia[0].asset._ref, _type: "reference" },
-      })
-        .width(1200)
-        .url() || undefined
-    : undefined;
 
   const articleJsonLd = articleSchema({
     title: useCase.title,
     slug: useCase.slug,
     description: useCase.description,
-    createdAt: useCase._createdAt,
+    createdAt: new Date().toISOString(),
     creator: useCase.creator,
-    categoryName: useCase.category.name,
-    imageUrl: firstImageUrl,
+    categoryName: category.name,
   });
 
   const breadcrumbJsonLd = breadcrumbSchema([
     { name: "Home", url: SITE_URL },
     { name: "Browse", url: `${SITE_URL}/browse` },
     {
-      name: useCase.category.name,
-      url: `${SITE_URL}/browse?category=${useCase.category.slug}`,
+      name: category.name,
+      url: `${SITE_URL}/browse?category=${category.slug}`,
     },
     {
       name: useCase.title,
@@ -344,10 +292,10 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
               </Link>
               <span className="shrink-0 text-stone-300">/</span>
               <Link
-                href={`/browse?category=${useCase.category.slug}`}
+                href={`/browse?category=${category.slug}`}
                 className="shrink-0 hover:text-stone-900 transition-colors"
               >
-                {useCase.category.name}
+                {category.name}
               </Link>
               <span className="shrink-0 text-stone-300">/</span>
               <span className="text-stone-900 font-medium truncate">{useCase.title}</span>
@@ -374,20 +322,20 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                     variant="outline"
                     className={cn(
                       "font-medium",
-                      CATEGORY_COLORS[useCase.category.color] ||
+                      CATEGORY_COLORS[category.color] ||
                         CATEGORY_COLORS.amber
                     )}
                   >
-                    {useCase.category.name}
+                    {category.name}
                   </Badge>
                   <Badge
                     variant="outline"
                     className={cn(
                       "font-medium",
-                      COMPLEXITY_CONFIG[useCase.complexity].className
+                      COMPLEXITY_CONFIG[useCase.complexity]?.className
                     )}
                   >
-                    {COMPLEXITY_CONFIG[useCase.complexity].label}
+                    {COMPLEXITY_CONFIG[useCase.complexity]?.label}
                   </Badge>
                   <Badge variant="outline" className="font-medium">
                     {TYPE_LABELS[useCase.type] || useCase.type}
@@ -414,15 +362,15 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
 
               {/* Right: upvote button — Product Hunt style */}
               <div className="shrink-0 hidden md:flex flex-col items-center gap-3 pt-1">
-                <UpvoteButton id={useCase._id} initialCount={useCase.upvotes} variant="hero" />
-                <BookmarkButton useCaseId={useCase._id} useCaseTitle={useCase.title} variant="detail" />
+                <UpvoteButton id={useCase.slug} initialCount={0} variant="hero" />
+                <BookmarkButton useCaseId={useCase.slug} useCaseTitle={useCase.title} variant="detail" />
               </div>
             </div>
 
             {/* Mobile upvote — below description */}
             <div className="mt-5 md:hidden space-y-3">
-              <UpvoteButton id={useCase._id} initialCount={useCase.upvotes} variant="detail" />
-              <BookmarkButton useCaseId={useCase._id} useCaseTitle={useCase.title} variant="detail" />
+              <UpvoteButton id={useCase.slug} initialCount={0} variant="detail" />
+              <BookmarkButton useCaseId={useCase.slug} useCaseTitle={useCase.title} variant="detail" />
             </div>
           </div>
         </div>
@@ -432,13 +380,18 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column - Main Content */}
             <div className="lg:col-span-2 space-y-8">
+              {/* Copy to Agent — the killer feature */}
+              {useCase.prompt && (
+                <CopyPrompt prompt={useCase.prompt} />
+              )}
+
               {/* Full Description */}
               <div className="bg-white border border-stone-200 rounded-lg shadow-sm p-6 md:p-8">
                 <h2 className="text-2xl font-semibold text-stone-900 mb-4">
                   About This Use Case
                 </h2>
                 <div className="prose prose-stone max-w-none">
-                  {longDescriptionText.split("\n\n").map((paragraph, idx) => (
+                  {longDescriptionText.split("\n\n").map((paragraph: string, idx: number) => (
                     <p
                       key={idx}
                       className="text-stone-700 leading-relaxed mb-4 last:mb-0"
@@ -450,14 +403,14 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
               </div>
 
               {/* How to Set This Up */}
-              {setupStepsText && (
+              {useCase.setupSteps && useCase.setupSteps.length > 0 && (
                 <div className="bg-white border border-stone-200 rounded-lg shadow-sm p-6 md:p-8">
                   <h2 className="text-2xl font-semibold text-stone-900 mb-4 flex items-center gap-2">
                     <Zap className="w-6 h-6 text-amber-600" />
                     How to Set This Up
                   </h2>
                   <div className="prose prose-stone max-w-none">
-                    {setupStepsText.split("\n\n").map((step, idx) => (
+                    {useCase.setupSteps.map((step: string, idx: number) => (
                       <div
                         key={idx}
                         className="flex gap-4 mb-4 last:mb-0 items-start"
@@ -474,120 +427,6 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                 </div>
               )}
 
-              {/* Media */}
-              {hasMedia && (
-                <div className="bg-white border border-stone-200 rounded-lg shadow-sm p-6 md:p-8">
-                  <h2 className="text-2xl font-semibold text-stone-900 mb-4">
-                    Media
-                  </h2>
-                  <div className="space-y-4">
-                    {/* Images */}
-                    {imageMedia.map((media, idx) => {
-                      // Non-Twitter video: first image gets play overlay linking to source
-                      const isNonTwitterVideoThumbnail =
-                        !isTwitterSource && videoMedia.length > 0 && idx === 0;
-
-                      if (isNonTwitterVideoThumbnail) {
-                        return (
-                          <a
-                            key={media._key}
-                            href={useCase.sourceUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="group relative block rounded-lg overflow-hidden"
-                          >
-                            <Image
-                              src={
-                                urlFor({
-                                  _type: "image",
-                                  asset: {
-                                    _ref: media.asset!._ref,
-                                    _type: "reference",
-                                  },
-                                })
-                                  .width(800)
-                                  .url() || ""
-                              }
-                              alt={media.caption || "Video thumbnail"}
-                              width={800}
-                              height={450}
-                              className="w-full h-auto transition-opacity group-hover:opacity-90"
-                            />
-                            {/* Play overlay */}
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition-colors group-hover:bg-black/30">
-                              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-105">
-                                <Play className="size-6 text-stone-900 ml-0.5" />
-                              </div>
-                            </div>
-                            <p className="absolute bottom-3 left-3 text-[12px] font-medium text-white/80 bg-black/50 rounded-md px-2 py-0.5">
-                              Watch on{" "}
-                              {PLATFORM_LABELS[useCase.sourcePlatform]}
-                            </p>
-                          </a>
-                        );
-                      }
-
-                      return (
-                        <div
-                          key={media._key}
-                          className="rounded-lg overflow-hidden"
-                        >
-                          <Image
-                            src={
-                              urlFor({
-                                _type: "image",
-                                asset: {
-                                  _ref: media.asset!._ref,
-                                  _type: "reference",
-                                },
-                              })
-                                .width(800)
-                                .url() || ""
-                            }
-                            alt={media.caption || "Use case media"}
-                            width={800}
-                            height={450}
-                            className="w-full h-auto"
-                          />
-                          {media.caption && (
-                            <p className="text-sm text-stone-600 mt-2">
-                              {media.caption}
-                            </p>
-                          )}
-                        </div>
-                      );
-                    })}
-
-                    {/* Non-Twitter video-only fallback: external link card */}
-                    {!isTwitterSource &&
-                      videoMedia.length > 0 &&
-                      imageMedia.length === 0 && (
-                        <a
-                          href={useCase.sourceUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group flex items-center gap-4 rounded-lg border border-stone-200 bg-stone-50 p-6 transition-colors hover:border-amber-300 hover:bg-amber-50/50"
-                        >
-                          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-white shadow-sm transition-transform group-hover:scale-105 group-hover:border-amber-300">
-                            <Play className="size-6 text-stone-700 ml-0.5 group-hover:text-amber-700" />
-                          </div>
-                          <div>
-                            <p className="text-[15px] font-semibold text-stone-900 group-hover:text-amber-800">
-                              Watch video on{" "}
-                              {PLATFORM_LABELS[useCase.sourcePlatform]}
-                            </p>
-                            <p className="mt-0.5 text-[13px] text-stone-500">
-                              This use case includes a video demo. Click to view
-                              on the original platform.
-                            </p>
-                          </div>
-                          <ExternalLink className="ml-auto size-4 shrink-0 text-stone-400 group-hover:text-amber-600" />
-                        </a>
-                      )}
-                  </div>
-                </div>
-              )}
-
               {/* Source Link */}
               {isTwitterSource ? (
                 <div className="bg-white border border-stone-200 rounded-lg shadow-sm p-6 md:p-8">
@@ -595,11 +434,11 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                     Original Tweet
                   </h2>
                   <TwitterVideoEmbed
-                    sourceUrl={useCase.sourceUrl}
-                    platformLabel={PLATFORM_LABELS[useCase.sourcePlatform]}
+                    sourceUrl={useCase.sourceUrl!}
+                    platformLabel={PLATFORM_LABELS[useCase.sourcePlatform!]}
                   />
                 </div>
-              ) : (
+              ) : useCase.sourceUrl ? (
                 <div className="bg-amber-50 border border-amber-200 rounded-lg shadow-sm p-6">
                   <div className="flex items-start gap-4">
                     <div className="p-3 bg-white rounded-lg border border-amber-200">
@@ -611,7 +450,7 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                       </h3>
                       <p className="text-sm text-stone-600 mb-4">
                         See the original discussion and community feedback on{" "}
-                        {PLATFORM_LABELS[useCase.sourcePlatform]}.
+                        {PLATFORM_LABELS[useCase.sourcePlatform || "other"]}.
                       </p>
                       <Button
                         asChild
@@ -623,14 +462,14 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-2"
                         >
-                          View on {PLATFORM_LABELS[useCase.sourcePlatform]}
+                          View on {PLATFORM_LABELS[useCase.sourcePlatform || "other"]}
                           <ExternalLink className="w-4 h-4" />
                         </a>
                       </Button>
                     </div>
                   </div>
                 </div>
-              )}
+              ) : null}
             </div>
 
             {/* Right Column - Sidebar */}
@@ -656,7 +495,7 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                     <div>
                       <div className="text-stone-600 mb-0.5">Complexity</div>
                       <div className="font-medium text-stone-900">
-                        {COMPLEXITY_CONFIG[useCase.complexity].label}
+                        {COMPLEXITY_CONFIG[useCase.complexity]?.label}
                       </div>
                     </div>
                   </div>
@@ -675,7 +514,7 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                       <div>
                         <div className="text-stone-600 mb-1.5">Channels</div>
                         <div className="flex flex-wrap gap-1.5">
-                          {useCase.channels.map((channel) => (
+                          {useCase.channels.map((channel: string) => (
                             <Badge
                               key={channel}
                               variant="outline"
@@ -688,13 +527,13 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                       </div>
                     </div>
                   )}
-                  {useCase.integrations && useCase.integrations.length > 0 && (
+                  {integrations.length > 0 && (
                     <div className="flex items-start gap-3">
                       <Puzzle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
                       <div>
                         <div className="text-stone-600 mb-0.5">Integrations</div>
                         <div className="font-medium text-stone-900">
-                          {useCase.integrations.map((i) => i.name).join(", ")}
+                          {integrations.map((i) => i.name).join(", ")}
                         </div>
                       </div>
                     </div>
@@ -722,7 +561,7 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                       {useCase.creator.name}
                     </div>
                     <a
-                      href={`https://twitter.com/${useCase.creator.handle}`}
+                      href={useCase.creator.url || `https://twitter.com/${useCase.creator.handle}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-sm text-stone-600 hover:text-amber-600 transition-colors"
@@ -740,16 +579,16 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                 <div className="space-y-4">
                   <div>
                     <div className="text-sm text-stone-600 mb-1">Category</div>
-                    <Link href={`/browse?category=${useCase.category.slug}`}>
+                    <Link href={`/browse?category=${category.slug}`}>
                       <Badge
                         variant="outline"
                         className={cn(
                           "font-medium cursor-pointer hover:opacity-80 transition-opacity",
-                          CATEGORY_COLORS[useCase.category.color] ||
+                          CATEGORY_COLORS[category.color] ||
                             CATEGORY_COLORS.amber
                         )}
                       >
-                        {useCase.category.name}
+                        {category.name}
                       </Badge>
                     </Link>
                   </div>
@@ -762,10 +601,10 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                       variant="outline"
                       className={cn(
                         "font-medium",
-                        COMPLEXITY_CONFIG[useCase.complexity].className
+                        COMPLEXITY_CONFIG[useCase.complexity]?.className
                       )}
                     >
-                      {COMPLEXITY_CONFIG[useCase.complexity].label}
+                      {COMPLEXITY_CONFIG[useCase.complexity]?.label}
                     </Badge>
                   </div>
                   <Separator />
@@ -780,15 +619,15 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
               </div>
 
               {/* Integrations */}
-              {useCase.integrations && useCase.integrations.length > 0 && (
+              {integrations.length > 0 && (
                 <div className="bg-white border border-stone-200 rounded-lg shadow-sm p-6">
                   <h3 className="font-semibold text-stone-900 mb-4">
                     Integrations
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {useCase.integrations.map((integration) => (
+                    {integrations.map((integration) => (
                       <Badge
-                        key={integration._id}
+                        key={integration.slug}
                         variant="outline"
                         className="font-medium text-stone-700 bg-stone-50 border-stone-200"
                       >
@@ -806,19 +645,16 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                     Ideal For
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {useCase.personas.map((persona, idx) => {
-                      const personaId = PERSONA_ID_MAP[persona] || persona;
-                      return (
-                        <Link key={idx} href={`/browse?persona=${personaId}`}>
-                          <Badge
-                            variant="outline"
-                            className="font-medium text-stone-700 bg-stone-50 border-stone-200 cursor-pointer hover:bg-stone-100 hover:border-stone-300 transition-colors"
-                          >
-                            {persona}
-                          </Badge>
-                        </Link>
-                      );
-                    })}
+                    {useCase.personas.map((persona: string, idx: number) => (
+                      <Link key={idx} href={`/browse?persona=${persona}`}>
+                        <Badge
+                          variant="outline"
+                          className="font-medium text-stone-700 bg-stone-50 border-stone-200 cursor-pointer hover:bg-stone-100 hover:border-stone-300 transition-colors"
+                        >
+                          {getPersonaLabel(persona)}
+                        </Badge>
+                      </Link>
+                    ))}
                   </div>
                 </div>
               )}
@@ -833,14 +669,14 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                   Related Use Cases
                 </h2>
                 <p className="text-stone-600">
-                  More {useCase.category.name.toLowerCase()} examples you might
+                  More {category.name.toLowerCase()} examples you might
                   find interesting
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {relatedUseCases.slice(0, 3).map((relatedCase) => (
                   <UseCaseCardComponent
-                    key={relatedCase._id}
+                    key={relatedCase.id}
                     useCase={relatedCase}
                   />
                 ))}

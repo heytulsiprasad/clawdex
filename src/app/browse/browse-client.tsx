@@ -195,7 +195,7 @@ function FilterContent({
             const isSelected = selectedCategories.includes(cat.slug);
             return (
               <label
-                key={cat._id}
+                key={cat.id}
                 className={cn(
                   "group flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 transition-all",
                   isSelected
@@ -952,7 +952,7 @@ function BrowseInner({
               {filteredUseCases.length > 0 ? (
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {filteredUseCases.map((useCase) => (
-                    <UseCaseCardComponent key={useCase._id} useCase={useCase} />
+                    <UseCaseCardComponent key={useCase.id} useCase={useCase} />
                   ))}
                 </div>
               ) : (

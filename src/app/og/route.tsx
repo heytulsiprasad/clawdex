@@ -1,35 +1,8 @@
 import { ImageResponse } from "@vercel/og";
 import { NextRequest } from "next/server";
+import { allUseCases } from "@clawdex/data/use-cases";
 
 export const runtime = "edge";
-
-// Fetch total use case count from Sanity
-async function getUseCaseCount(): Promise<number> {
-  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
-  const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
-
-  if (!projectId) {
-    return 90; // Fallback if env not set
-  }
-
-  try {
-    const query = encodeURIComponent('count(*[_type == "useCase"])');
-    const url = `https://${projectId}.api.sanity.io/v2024-01-01/data/query/${dataset}?query=${query}`;
-
-    const response = await fetch(url, {
-      next: { revalidate: 3600 }, // Cache for 1 hour
-    });
-
-    if (!response.ok) {
-      return 90;
-    }
-
-    const data = await response.json();
-    return data.result || 90;
-  } catch {
-    return 90; // Fallback on error
-  }
-}
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -41,9 +14,8 @@ export async function GET(request: NextRequest) {
   const category = searchParams.get("category");
   const complexity = searchParams.get("complexity");
 
-  // Get count from param or fetch from Sanity
   const countParam = searchParams.get("count");
-  const count = countParam || `${await getUseCaseCount()}+`;
+  const count = countParam || `${allUseCases.length}+`;
 
   // Get the base URL for assets
   const siteUrl =

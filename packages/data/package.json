@@ -1,0 +1,19 @@
+{
+  "name": "@clawdex/data",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./use-cases": "./src/use-cases/index.ts",
+    "./categories": "./src/categories.ts",
+    "./integrations": "./src/integrations.ts",
+    "./personas": "./src/personas.ts",
+    "./types": "./src/types.ts",
+    "./skills": "./src/skills/index.ts",
+    "./agent-configs": "./src/agent-configs/index.ts",
+    "./faqs": "./src/faqs.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}
