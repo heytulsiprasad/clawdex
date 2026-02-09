@@ -59,14 +59,13 @@ export function UseCaseCardComponent({ useCase }: { useCase: UseCaseCard }) {
     >
       <div className="relative flex h-full flex-col rounded-xl border border-stone-200/80 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 group-hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] group-hover:border-stone-300/80 group-hover:-translate-y-0.5">
         {/* Top row: Category + Complexity */}
-        <div className="flex items-start gap-2 mb-3 overflow-hidden">
+        <div className="flex flex-wrap items-start gap-2 mb-3">
           <Badge
             variant="outline"
             className={cn(
-              "rounded-md text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 truncate max-w-[60%]",
+              "rounded-md text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5",
               categoryColor
             )}
-            title={useCase.category.name}
           >
             {useCase.category.name}
           </Badge>

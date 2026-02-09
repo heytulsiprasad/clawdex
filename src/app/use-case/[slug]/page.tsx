@@ -380,11 +380,6 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column - Main Content */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Copy to Agent — the killer feature */}
-              {useCase.prompt && (
-                <CopyPrompt prompt={useCase.prompt} />
-              )}
-
               {/* Full Description */}
               <div className="bg-white border border-stone-200 rounded-lg shadow-sm p-6 md:p-8">
                 <h2 className="text-2xl font-semibold text-stone-900 mb-4">
@@ -401,6 +396,11 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
                   ))}
                 </div>
               </div>
+
+              {/* Copy to Agent — the killer feature */}
+              {useCase.prompt && (
+                <CopyPrompt prompt={useCase.prompt} />
+              )}
 
               {/* How to Set This Up */}
               {useCase.setupSteps && useCase.setupSteps.length > 0 && (
