@@ -111,8 +111,7 @@ export const familyUseCases: UseCase[] = [
       name: "Eloise Ames",
       url: "https://twitter.com/eloiseames",
     },
-    sourceUrl: "https://twitter.com/eloiseames/status/1889472913726483",
-    sourcePlatform: "twitter",
+    sourcePlatform: "other",
     featured: false,
   },
 ];

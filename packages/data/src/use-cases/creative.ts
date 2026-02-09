@@ -48,8 +48,7 @@ export const creativeUseCases: UseCase[] = [
       name: "Amanda Natividad",
       url: "https://twitter.com/amandanat",
     },
-    sourceUrl: "https://twitter.com/amandanat/status/1891283746205812",
-    sourcePlatform: "twitter",
+    sourcePlatform: "other",
     featured: false,
   },
   {
@@ -106,9 +105,7 @@ export const creativeUseCases: UseCase[] = [
       name: "Jay Acunzo",
       url: "https://twitter.com/jayacunzo",
     },
-    sourceUrl:
-      "https://dev.to/jayacunzo/automating-podcast-prep-with-ai-agents-3k8f",
-    sourcePlatform: "devto",
+    sourcePlatform: "other",
     featured: false,
   },
 ];

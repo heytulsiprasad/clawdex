@@ -47,8 +47,7 @@ export const developerUseCases: UseCase[] = [
       name: "Alex Kondov",
       url: "https://twitter.com/alexkondov",
     },
-    sourceUrl: "https://twitter.com/alexkondov/status/1887392014738291",
-    sourcePlatform: "twitter",
+    sourcePlatform: "other",
     featured: true,
   },
   {

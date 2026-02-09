@@ -53,8 +53,7 @@ You manage three specialist agents:
       name: "Yuri Aborsky",
       url: "https://twitter.com/yaborsky",
     },
-    sourceUrl: "https://twitter.com/yaborsky/status/1893584201842927",
-    sourcePlatform: "twitter",
+    sourcePlatform: "other",
     featured: true,
   },
   {

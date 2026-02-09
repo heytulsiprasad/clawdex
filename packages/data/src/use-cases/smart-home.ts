@@ -46,8 +46,7 @@ export const smartHomeUseCases: UseCase[] = [
       name: "Franck Aborsky",
       url: "https://twitter.com/faborsky",
     },
-    sourceUrl: "https://twitter.com/faborsky/status/1891047382312740",
-    sourcePlatform: "twitter",
+    sourcePlatform: "other",
     featured: true,
   },
   {

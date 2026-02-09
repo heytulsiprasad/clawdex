@@ -60,8 +60,7 @@ export const learningUseCases: UseCase[] = [
       name: "Pablo Borella",
       url: "https://twitter.com/paborella",
     },
-    sourceUrl: "https://twitter.com/paborella/status/1890847291637592",
-    sourcePlatform: "twitter",
+    sourcePlatform: "other",
     featured: true,
   },
 ];

@@ -43,8 +43,7 @@ export const automationUseCases: UseCase[] = [
       name: "Marcus Wei",
       url: "https://twitter.com/marcuswei_",
     },
-    sourceUrl: "https://twitter.com/marcuswei_/status/1893274651029384",
-    sourcePlatform: "twitter",
+    sourcePlatform: "other",
     featured: true,
   },
   {
@@ -84,8 +83,7 @@ export const automationUseCases: UseCase[] = [
       name: "Priya Sharma",
       url: "https://twitter.com/priya_builds",
     },
-    sourceUrl: "https://twitter.com/priya_builds/status/1890183726401928",
-    sourcePlatform: "twitter",
+    sourcePlatform: "other",
     featured: true,
   },
   {

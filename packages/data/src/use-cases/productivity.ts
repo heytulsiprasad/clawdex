@@ -48,8 +48,7 @@ export const productivityUseCases: UseCase[] = [
       name: "Steph Ango",
       url: "https://twitter.com/kepano",
     },
-    sourceUrl: "https://twitter.com/kepano/status/1886291347204918",
-    sourcePlatform: "twitter",
+    sourcePlatform: "other",
     featured: true,
   },
   {
@@ -153,8 +152,7 @@ export const productivityUseCases: UseCase[] = [
       name: "Shawn Wang",
       url: "https://twitter.com/swyx",
     },
-    sourceUrl: "https://twitter.com/swyx/status/1892038471326719",
-    sourcePlatform: "twitter",
+    sourcePlatform: "other",
     featured: false,
   },
 ];
